@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  全景分类图 - 自我提升与自我进化算法
+  供全组 PPT 复用，可在浏览器中直接打开查看
+  使用方法：在你负责的 Part 中高亮对应分支，其余分支降低透明度
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1e"/>
+      <stop offset="100%" stop-color="#0d1525"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="connectorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" fill="url(#bgGrad)" rx="12"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.04">
+    <line x1="0" y1="60" x2="1000" y2="60" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="120" x2="1000" y2="120" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="180" x2="1000" y2="180" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="240" x2="1000" y2="240" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="300" x2="1000" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="360" x2="1000" y2="360" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="420" x2="1000" y2="420" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="480" x2="1000" y2="480" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="540" x2="1000" y2="540" stroke="white" stroke-width="1"/>
+    <line x1="200" y1="0" x2="200" y2="620" stroke="white" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="620" stroke="white" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="620" stroke="white" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="620" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Title -->
+  <text x="500" y="48" text-anchor="middle" fill="#f1f5f9" font-size="26" font-weight="700"
+        font-family="Inter, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    Self-Improving &amp; Self-Evolving Algorithms
+  </text>
+  <text x="500" y="75" text-anchor="middle" fill="#94a3b8" font-size="15"
+        font-family="Inter, 'Noto Sans SC', sans-serif">
+    自我提升与自我进化算法 · 全景分类框架
+  </text>
+
+  <!-- Connector line -->
+  <line x1="120" y1="110" x2="880" y2="110" stroke="url(#connectorGrad)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="200" cy="110" r="6" fill="#f97316" filter="url(#glow)"/>
+  <circle cx="500" cy="110" r="6" fill="#06b6d4" filter="url(#glow)"/>
+  <circle cx="800" cy="110" r="6" fill="#22c55e" filter="url(#glow)"/>
+
+  <!-- Vertical lines from dots to branches -->
+  <line x1="200" y1="116" x2="200" y2="150" stroke="#f97316" stroke-width="2" opacity="0.5"/>
+  <line x1="500" y1="116" x2="500" y2="150" stroke="#06b6d4" stroke-width="2" opacity="0.5"/>
+  <line x1="800" y1="116" x2="800" y2="150" stroke="#22c55e" stroke-width="2" opacity="0.5"/>
+
+  <!-- ===== Branch 1: Self-Improving (Orange) ===== -->
+  <g id="branch-improving">
+    <!-- Branch box -->
+    <rect x="60" y="150" width="280" height="440" rx="14" fill="rgba(249,115,22,0.04)" stroke="rgba(249,115,22,0.2)" stroke-width="1.5"/>
+    <!-- Top accent bar -->
+    <rect x="60" y="150" width="280" height="4" rx="2" fill="url(#orangeGrad)"/>
+    <!-- Branch title -->
+    <text x="200" y="190" text-anchor="middle" fill="#f97316" font-size="20" font-weight="700"
+          font-family="Inter, 'Noto Sans SC', sans-serif">自我提升</text>
+    <text x="200" y="212" text-anchor="middle" fill="#94a3b8" font-size="13"
+          font-family="Inter, sans-serif">Self-Improving</text>
+
+    <!-- Method: Self-Instruct -->
+    <rect x="82" y="235" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="100" cy="263" r="5" fill="#f97316"/>
+    <text x="116" y="256" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">Self-Instruct</text>
+    <text x="116" y="274" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">自己给自己出题</text>
+
+    <!-- Method: STaR -->
+    <rect x="82" y="303" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="100" cy="331" r="5" fill="#f97316"/>
+    <text x="116" y="324" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">STaR</text>
+    <text x="116" y="342" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">自举推理 · Bootstrapping Reasoning</text>
+
+    <!-- Method: Self-Refine -->
+    <rect x="82" y="371" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="100" cy="399" r="5" fill="#f97316"/>
+    <text x="116" y="392" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">Self-Refine</text>
+    <text x="116" y="410" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">迭代自我改进 · Generate→Critique→Refine</text>
+
+    <!-- Method: ReST -->
+    <rect x="82" y="439" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="100" cy="467" r="5" fill="#f97316"/>
+    <text x="116" y="460" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">ReST</text>
+    <text x="116" y="478" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">强化自训练 · Reinforced Self-Training</text>
+
+    <!-- Speaker label -->
+    <rect x="140" y="520" width="120" height="30" rx="15" fill="rgba(249,115,22,0.15)" stroke="rgba(249,115,22,0.3)" stroke-width="1"/>
+    <text x="200" y="540" text-anchor="middle" fill="#f97316" font-size="12" font-weight="600"
+          font-family="Inter, 'Noto Sans SC', sans-serif">Part 2 · 成员 B</text>
+  </g>
+
+  <!-- ===== Branch 2: Self-Play (Cyan) ===== -->
+  <g id="branch-play">
+    <rect x="360" y="150" width="280" height="440" rx="14" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.2)" stroke-width="1.5"/>
+    <rect x="360" y="150" width="280" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="500" y="190" text-anchor="middle" fill="#06b6d4" font-size="20" font-weight="700"
+          font-family="Inter, 'Noto Sans SC', sans-serif">自我博弈</text>
+    <text x="500" y="212" text-anchor="middle" fill="#94a3b8" font-size="13"
+          font-family="Inter, sans-serif">Self-Play</text>
+
+    <!-- Method: SPIN -->
+    <rect x="382" y="235" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="400" cy="263" r="5" fill="#06b6d4"/>
+    <text x="416" y="256" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">SPIN</text>
+    <text x="416" y="274" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">自我博弈微调 · 类比 AlphaGo</text>
+
+    <!-- Method: Self-Rewarding LM -->
+    <rect x="382" y="303" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="400" cy="331" r="5" fill="#06b6d4"/>
+    <text x="416" y="324" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">Self-Rewarding LM</text>
+    <text x="416" y="342" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">自我奖励 · 既当选手又当裁判</text>
+
+    <!-- Speaker label -->
+    <rect x="440" y="520" width="120" height="30" rx="15" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="1"/>
+    <text x="500" y="540" text-anchor="middle" fill="#06b6d4" font-size="12" font-weight="600"
+          font-family="Inter, 'Noto Sans SC', sans-serif">Part 3 · 成员 C</text>
+  </g>
+
+  <!-- ===== Branch 3: Self-Evolving (Green) ===== -->
+  <g id="branch-evolving">
+    <rect x="660" y="150" width="280" height="440" rx="14" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.2)" stroke-width="1.5"/>
+    <rect x="660" y="150" width="280" height="4" rx="2" fill="url(#greenGrad)"/>
+    <text x="800" y="190" text-anchor="middle" fill="#22c55e" font-size="20" font-weight="700"
+          font-family="Inter, 'Noto Sans SC', sans-serif">自我进化</text>
+    <text x="800" y="212" text-anchor="middle" fill="#94a3b8" font-size="13"
+          font-family="Inter, sans-serif">Self-Evolving</text>
+
+    <!-- Method: Constitutional AI -->
+    <rect x="682" y="235" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="700" cy="263" r="5" fill="#22c55e"/>
+    <text x="716" y="256" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">Constitutional AI</text>
+    <text x="716" y="274" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">宪法 AI · 原则驱动的自我进化</text>
+
+    <!-- Method: FunSearch -->
+    <rect x="682" y="303" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="700" cy="331" r="5" fill="#22c55e"/>
+    <text x="716" y="324" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">FunSearch</text>
+    <text x="716" y="342" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">LLM + 进化搜索 · DeepMind 2024</text>
+
+    <!-- Method: EvoPrompt -->
+    <rect x="682" y="371" width="236" height="56" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="700" cy="399" r="5" fill="#22c55e"/>
+    <text x="716" y="392" fill="#f1f5f9" font-size="15" font-weight="600" font-family="Inter, sans-serif">EvoPrompt</text>
+    <text x="716" y="410" fill="#94a3b8" font-size="12" font-family="Inter, 'Noto Sans SC', sans-serif">进化提示优化</text>
+
+    <!-- Speaker label -->
+    <rect x="740" y="520" width="120" height="30" rx="15" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
+    <text x="800" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600"
+          font-family="Inter, 'Noto Sans SC', sans-serif">Part 3 · 成员 C</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="500" y="600" text-anchor="middle" fill="#64748b" font-size="11"
+        font-family="Inter, 'Noto Sans SC', sans-serif">
+    CS2916 大语言模型 · 上海交通大学 · 2026 春季
+  </text>
+</svg>

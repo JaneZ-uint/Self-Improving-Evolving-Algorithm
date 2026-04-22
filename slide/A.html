@@ -1507,7 +1507,7 @@
         getAllFragments(nextSlide).forEach(f => f.classList.remove('visible'));
 
         prevSlide.classList.remove('active');
-        prevSlide.classList.add(direction > 0 ? 'exit-left' : '');
+        if (direction > 0) prevSlide.classList.add('exit-left');
         prevSlide.style.transform = direction > 0
           ? 'translateX(-40px) scale(0.98)'
           : 'translateX(40px) scale(0.98)';

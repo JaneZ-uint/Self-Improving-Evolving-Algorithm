@@ -1190,7 +1190,120 @@
     </div>
 
     <!-- =====================================================
-         Slide 5: The Pivot
+         Slide 5: LLM Training Paradigm Evolution
+         ===================================================== -->
+    <div class="slide" id="paradigm"
+         data-notes="90s - 用 timeline 快速梳理四个阶段。每个阶段一句话带过，重点是让观众看到'每一步都是在解决上一步的瓶颈'。'Pre-training 让模型知道很多，但不会说人话；SFT 教会了它遵循指令，但需要大量示范数据；RLHF 用人类偏好来对齐，但标注成本爆炸——所以我们到了第四阶段。'">
+      <div class="slide-content">
+        <div class="tag">Evolution</div>
+        <h2>LLM 训练范式的<span class="gradient-text">四次演进</span></h2>
+        <p class="subtitle" style="margin-bottom: 40px; font-size: 17px;">每一步都是对上一步瓶颈的回应</p>
+
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 10px; align-items: center; max-width: 1060px; margin: 0 auto;" class="stagger">
+          <!-- Stage 1 -->
+          <div class="stage-card">
+            <div class="stage-number">1</div>
+            <h3 style="font-size: 16px;">Pre-training</h3>
+            <p style="font-size: 13px; color: var(--accent-cyan); font-weight: 600; margin: 6px 0;">GPT-1 / 2 / 3</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">海量文本<br>无监督学习</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">瓶颈：不会遵循指令</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="stage-card">
+            <div class="stage-number">2</div>
+            <h3 style="font-size: 16px;">SFT</h3>
+            <p style="font-size: 13px; color: var(--accent-cyan); font-weight: 600; margin: 6px 0;">InstructGPT, Alpaca</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">人类示范<br>监督微调</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">瓶颈：示范数据有限</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="stage-card">
+            <div class="stage-number">3</div>
+            <h3 style="font-size: 16px;">RLHF</h3>
+            <p style="font-size: 13px; color: var(--accent-cyan); font-weight: 600; margin: 6px 0;">ChatGPT, Claude</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">人类偏好<br>强化学习</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">瓶颈：标注成本爆炸</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Stage 4 (highlighted) -->
+          <div class="stage-card stage-highlight">
+            <div class="stage-number">4</div>
+            <h3 style="font-size: 16px; color: var(--accent-orange);">Self-Improving</h3>
+            <p style="font-size: 13px; color: var(--accent-orange); font-weight: 600; margin: 6px 0;">Today's Focus</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">模型自己<br>提升自己</p>
+            <p style="font-size: 11px; color: var(--accent-orange); margin-top: 8px; font-weight: 500;">天花板在哪？→ 本场探讨</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 6: Data Wall
+         ===================================================== -->
+    <div class="slide" id="datawall"
+         data-notes="90s - 从 RLHF 瓶颈过渡到 Self-Improvement 的必要性。'不仅人工标注贵，连可用的训练数据本身都快用完了。高质量互联网文本的增速远跟不上模型的需求。所以 Self-Improvement 不是一个可选项——它是唯一的出路。'">
+      <div class="slide-content">
+        <div class="tag">The Data Wall</div>
+        <h2>不仅标注贵，<span class="highlight-orange">数据也快用完了</span></h2>
+        <div class="spacer-md"></div>
+
+        <div class="grid-2" style="max-width: 900px; margin: 0 auto; align-items: stretch;">
+          <div class="glass-card text-left">
+            <h3 style="font-size: 18px; margin-bottom: 16px;">Data Wall 问题</h3>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+              研究估计，<strong style="color: var(--accent-orange);">高质量互联网文本</strong>可能在
+              <strong style="color: var(--accent-orange);">2026-2028 年</strong>被主要 AI 实验室用尽。
+            </p>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 12px; line-height: 1.7;">
+              模型越来越大，需要的数据指数增长，<br>
+              但互联网的高质量内容增速远跟不上。
+            </p>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px; font-style: italic;">
+              — Villalobos et al., 2022
+            </p>
+          </div>
+
+          <div class="glass-card text-center" style="display: flex; flex-direction: column; justify-content: center;">
+            <p style="font-size: 15px; color: var(--text-muted); margin-bottom: 20px;">三条出路</p>
+            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+              <div style="padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid var(--text-muted);">
+                <p style="font-size: 14px; color: var(--text-muted);">合成数据（Synthetic Data）</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid var(--text-muted);">
+                <p style="font-size: 14px; color: var(--text-muted);">多模态数据（图像 / 视频 / 音频）</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(249,115,22,0.08); border-radius: 10px; border-left: 3px solid var(--accent-orange);">
+                <p style="font-size: 14px; color: var(--accent-orange); font-weight: 600;">Self-Improvement：让模型生成自己的训练数据</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="fragment">
+          <p style="font-size: 22px; color: var(--text-secondary); font-weight: 500;">
+            Self-Improvement 不是可选项，是<span class="highlight-orange">必选项</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 7: The Pivot
          ===================================================== -->
     <div class="slide" id="pivot"
          data-notes="60s - 这张是转折点，从问题过渡到解决方案。先让'如果...'停留一下（用 fragment），制造期待感。语气从沉重转向兴奋。">
@@ -1221,7 +1334,7 @@
          Slide 6: Bootstrap Concept
          ===================================================== -->
     <div class="slide" id="bootstrap"
-         data-notes="90s - 讲 Munchausen 的故事（简短有趣），然后过渡到技术直觉。关键强调：虽然听起来矛盾，但在正确的条件下确实 work。'模型的输出虽然不完美，但其中隐含着有价值的信号。'">
+         data-notes="90s - 讲 Munchausen 的故事（简短有趣），然后过渡到技术直觉。'虽然听起来矛盾——用自己的输出训练自己，但模型的输出中确实隐含着有价值的信号。关键在于一种不对称性——判断答案对不对，比从零写出正确答案更容易。下一张 slide 我们会深入这个点。'">
       <div class="slide-content">
         <div class="tag">Core Idea</div>
         <h2>自举（Bootstrap）：<span class="highlight-orange">用自己提升自己</span></h2>
@@ -1294,68 +1407,52 @@
         <div class="callout fragment" style="max-width: 800px;">
           <div class="callout-label">Key Insight</div>
           <p>模型的输出虽然不完美，但其中<strong style="color: var(--accent-orange);">隐含着有价值的信号</strong>。
-          只要我们有办法<strong style="color: var(--accent-cyan);">识别和筛选</strong>这些信号，就能用它们来提升模型自身。</p>
+          关键在于：<strong style="color: var(--accent-cyan);">判断答案好不好，比从零写出好答案容易</strong>——
+          这种不对称性让自我提升成为可能。</p>
         </div>
       </div>
     </div>
 
     <!-- =====================================================
-         Slide 7: Student Analogy (3 Stages)
+         Slide 9: Generation vs Discrimination
          ===================================================== -->
-    <div class="slide" id="analogy"
-         data-notes="60s - 用学生学习的类比把三个阶段讲清楚。重点强调第三阶段（高亮卡片）。'Pre-training 就像读了所有维基百科——你知道了很多，但你不知道怎么跟人说话。SFT/RLHF 就像有老师手把手教你。而 Self-Improving 就是——你自己给自己布置作业、做完了自己批改。'">
+    <div class="slide" id="gendisc"
+         data-notes="60s - 这是 Part A 的理论点睛之笔。'验证一个数学证明比写一个证明容易得多。同样，模型判断一个回答好不好，比从零写出一个好回答要容易。这种不对称性就是自我提升的理论基础——用更强的判别能力来指导更弱的生成能力。当两者追平时，提升就到天花板了——Part D 的同学会详细展开这一点。'">
       <div class="slide-content">
-        <h2>LLM 的<span class="gradient-text">成长三阶段</span></h2>
-        <p class="subtitle" style="margin-bottom: 40px;">从跟老师学到自己学</p>
+        <div class="tag">Why It Works</div>
+        <h2>为什么<span class="gradient-text">自我提升</span>理论上可行？</h2>
+        <div class="spacer-md"></div>
 
-        <div style="display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 16px; align-items: center; max-width: 960px; margin: 0 auto;" class="stagger">
-          <!-- Stage 1 -->
-          <div class="stage-card">
-            <div class="stage-number">1</div>
-            <div class="stage-emoji">
-              <svg width="52" height="52" viewBox="0 0 52 52"><rect x="8" y="6" width="36" height="40" rx="4" fill="none" stroke="#94a3b8" stroke-width="2"/><line x1="16" y1="16" x2="36" y2="16" stroke="#64748b" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="24" x2="32" y2="24" stroke="#64748b" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="32" x2="28" y2="32" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <h3 style="font-size: 18px;">Pre-training</h3>
-            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">读遍所有教科书</p>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">"知道很多，但不会说人话"</p>
+        <div class="grid-2" style="max-width: 800px; margin: 0 auto; align-items: stretch;">
+          <div class="glass-card text-center" style="border-color: rgba(249,115,22,0.2);">
+            <p style="margin-bottom: 12px;">
+              <svg width="56" height="56" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="8" fill="none" stroke="#f97316" stroke-width="2" opacity="0.4"/><text x="28" y="36" text-anchor="middle" fill="#f97316" font-size="24" font-weight="700" font-family="Inter, sans-serif">?</text></svg>
+            </p>
+            <h3 style="font-size: 20px; color: var(--accent-orange);">生成（Generation）</h3>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6;">
+              从零写出正确答案
+            </p>
+            <p style="font-size: 32px; font-weight: 800; color: var(--accent-orange); margin-top: 16px;">难</p>
           </div>
 
-          <!-- Arrow -->
-          <div class="stage-arrow">
-            <svg width="32" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 24 12 M 18 6 L 24 12 L 18 18" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="glass-card text-center" style="border-color: rgba(34,197,94,0.2);">
+            <p style="margin-bottom: 12px;">
+              <svg width="56" height="56" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="8" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.4"/><path d="M 18 28 L 26 36 L 40 20" stroke="#22c55e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </p>
+            <h3 style="font-size: 20px; color: var(--accent-green);">判别（Discrimination）</h3>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6;">
+              判断答案是否正确
+            </p>
+            <p style="font-size: 32px; font-weight: 800; color: var(--accent-green); margin-top: 16px;">相对容易</p>
           </div>
+        </div>
 
-          <!-- Stage 2 -->
-          <div class="stage-card">
-            <div class="stage-number">2</div>
-            <div class="stage-emoji">
-              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="18" r="10" fill="none" stroke="#94a3b8" stroke-width="2"/><path d="M 14 46 C 14 34 38 34 38 46" fill="none" stroke="#94a3b8" stroke-width="2"/><path d="M 34 12 L 40 6" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/><circle cx="42" cy="4" r="2" fill="#06b6d4"/></svg>
-            </div>
-            <h3 style="font-size: 18px;">SFT / RLHF</h3>
-            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">老师手把手批改作业</p>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">"学会了，但老师很贵"</p>
-          </div>
-
-          <!-- Arrow -->
-          <div class="stage-arrow">
-            <svg width="32" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 24 12 M 18 6 L 24 12 L 18 18" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-
-          <!-- Stage 3 (highlighted) -->
-          <div class="stage-card stage-highlight">
-            <div class="stage-number">3</div>
-            <div class="stage-emoji">
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle cx="26" cy="22" r="14" fill="none" stroke="#f97316" stroke-width="2"/>
-                <path d="M 20 22 C 20 16 32 16 32 22 C 32 28 20 28 20 22" fill="none" stroke="#f97316" stroke-width="1.5" opacity="0.5"/>
-                <circle cx="26" cy="22" r="4" fill="#f97316" opacity="0.6"/>
-                <path d="M 26 8 L 26 4 M 40 22 L 44 22 M 12 22 L 8 22 M 36 12 L 39 9 M 16 12 L 13 9" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-              </svg>
-            </div>
-            <h3 style="font-size: 18px; color: var(--accent-orange);">Self-Improving</h3>
-            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">自己出题、做题、批改</p>
-            <p style="font-size: 12px; color: var(--accent-orange); margin-top: 8px; font-weight: 500;">"今天的主角"</p>
-          </div>
+        <div class="spacer-md"></div>
+        <div class="callout fragment" style="max-width: 800px;">
+          <div class="callout-label">Core Insight</div>
+          <p><strong style="color: var(--accent-orange);">批改作业比写作业容易</strong>——模型的判别能力通常强于生成能力。
+          自我提升的本质：<strong style="color: var(--accent-cyan);">用判别能力来指导和提升生成能力</strong>。
+          当两者追平时，提升到达天花板。</p>
         </div>
       </div>
     </div>
@@ -1364,7 +1461,7 @@
          Slide 8: Panorama Map
          ===================================================== -->
     <div class="slide" id="panorama"
-         data-notes="120s - 这是最关键的一张 slide，全场都会回来引用。逐一介绍三大分支，每个分支简要提一下包含哪些方法。不需要展开细讲，只要让观众'知道有这些东西'就好。'接下来三位同学会分别深入讲解这三大方向。'">
+         data-notes="120s - 全场最关键的 slide，后续每个 Part 开始都会回来引用。逐一介绍三大分支。'左边这一列是核心自我提升方法——模型自己出题、做题、改题。中间是自我博弈和 AI 反馈——模型和自己对弈，或者自己当裁判。右边是自我进化——用进化算法的思想让模型群体自己演化。接下来三位同学会分别深入讲解。'">
       <div class="slide-content">
         <div class="panorama-wrapper">
           <div class="panorama-header">
@@ -1384,18 +1481,20 @@
               <div class="branch-subtitle">Self-Improving</div>
               <ul class="branch-methods">
                 <li><span class="method-dot"></span> Self-Instruct <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自己出题</span></li>
-                <li><span class="method-dot"></span> STaR <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自举推理</span></li>
+                <li><span class="method-dot"></span> STaR / V-STaR <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自举推理</span></li>
                 <li><span class="method-dot"></span> Self-Refine <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我改进</span></li>
                 <li><span class="method-dot"></span> ReST <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">强化自训练</span></li>
               </ul>
             </div>
 
             <div class="panorama-branch branch-cyan fragment">
-              <div class="branch-title highlight-cyan">自我博弈</div>
-              <div class="branch-subtitle">Self-Play</div>
+              <div class="branch-title highlight-cyan">自我博弈与 AI 反馈</div>
+              <div class="branch-subtitle">Self-Play &amp; AI Feedback</div>
               <ul class="branch-methods">
-                <li><span class="method-dot"></span> SPIN <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我博弈微调</span></li>
+                <li><span class="method-dot"></span> SPIN <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我博弈</span></li>
                 <li><span class="method-dot"></span> Self-Rewarding <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我奖励</span></li>
+                <li><span class="method-dot"></span> Constitutional AI <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">宪法约束</span></li>
+                <li><span class="method-dot"></span> LLM Debate <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">对抗辩论</span></li>
               </ul>
             </div>
 
@@ -1403,9 +1502,9 @@
               <div class="branch-title highlight-green">自我进化</div>
               <div class="branch-subtitle">Self-Evolving</div>
               <ul class="branch-methods">
-                <li><span class="method-dot"></span> Constitutional AI <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">宪法 AI</span></li>
                 <li><span class="method-dot"></span> FunSearch <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化搜索</span></li>
                 <li><span class="method-dot"></span> EvoPrompt <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化提示</span></li>
+                <li><span class="method-dot"></span> OpenELM <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化大模型</span></li>
               </ul>
             </div>
           </div>
@@ -1417,7 +1516,7 @@
          Slide 9: Transition & Key Questions
          ===================================================== -->
     <div class="slide" id="transition"
-         data-notes="60s - 收束全场，留下悬念。把三个问题念出来，语气从好奇到坚定。最后一句交棒：'带着这些疑问，接下来 XX 同学会带我们深入了解具体的方法。' 笑着走回座位。">
+         data-notes="90s - 收束全场，留下悬念。把三个问题念出来，语气从好奇到坚定。回顾一下全景图中接下来要深入的区域。最后一句交棒：'带着这些疑问，接下来 XX 同学会带我们深入了解具体的方法。' 笑着走回座位。">
       <div class="slide-content">
         <h2 style="margin-bottom: 36px;">
           带着这些问题<br>进入<span class="gradient-text">具体方法</span>
@@ -1455,7 +1554,7 @@
   </div>
   <div class="nav-bar">
     <span class="nav-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate &nbsp;&middot;&nbsp; <kbd>S</kbd> notes &nbsp;&middot;&nbsp; <kbd>F</kbd> fullscreen</span>
-    <span class="slide-counter" id="slideCounter">1 / 10</span>
+    <span class="slide-counter" id="slideCounter">1 / 12</span>
   </div>
 
   <!-- Speaker Notes Overlay -->

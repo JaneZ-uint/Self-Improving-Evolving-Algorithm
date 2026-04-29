@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自我提升与自我进化算法 - Part D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       CSS Variables & Reset
+       ============================================================ */
+    :root {
+      --bg-primary: #0a0f1e;
+      --bg-secondary: #111827;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --bg-card-hover: rgba(255, 255, 255, 0.08);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-orange: #f97316;
+      --accent-orange-glow: rgba(249, 115, 22, 0.3);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.3);
+      --accent-green: #22c55e;
+      --accent-green-glow: rgba(34, 197, 94, 0.3);
+      --accent-purple: #a855f7;
+      --accent-red: #ef4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-light: rgba(255, 255, 255, 0.15);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --font-sans: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ============================================================
+       Slide Framework
+       ============================================================ */
+    .presentation {
+      width: 100%; height: 100%;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 50px 80px;
+      opacity: 0;
+      transform: translateX(40px) scale(0.98);
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(249, 115, 22, 0.03) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-primary) 0%, #0d1525 100%);
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: all;
+      z-index: 1;
+    }
+
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-40px) scale(0.98);
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1100px;
+      text-align: center;
+    }
+
+    /* ============================================================
+       Fragments
+       ============================================================ */
+    .fragment {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .fragment.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       Typography
+       ============================================================ */
+    h1 {
+      font-size: clamp(42px, 5vw, 72px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.5vw, 32px);
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: clamp(18px, 2vw, 28px);
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .big-text {
+      font-size: clamp(32px, 4vw, 56px);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-text-reverse {
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .highlight-orange { color: var(--accent-orange); }
+    .highlight-cyan { color: var(--accent-cyan); }
+    .highlight-green { color: var(--accent-green); }
+    .highlight-purple { color: var(--accent-purple); }
+    .highlight-red { color: var(--accent-red); }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .quote {
+      font-size: clamp(20px, 2.5vw, 30px);
+      font-style: italic;
+      color: var(--text-secondary);
+      border-left: 3px solid var(--accent-orange);
+      padding-left: 24px;
+      text-align: left;
+      max-width: 800px;
+      margin: 24px auto;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       Cards & Containers
+       ============================================================ */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    /* ============================================================
+       Pillar Cards
+       ============================================================ */
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .pillar-card:nth-child(1)::after { background: linear-gradient(90deg, var(--accent-red), #f87171); }
+    .pillar-card:nth-child(2)::after { background: linear-gradient(90deg, var(--accent-orange), #fbbf24); }
+    .pillar-card:nth-child(3)::after { background: linear-gradient(90deg, var(--accent-purple), #c084fc); }
+
+    .pillar-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .pillar-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .pillar-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .pillar-number {
+      font-size: 64px;
+      font-weight: 900;
+      opacity: 0.06;
+      position: absolute;
+      bottom: -10px; right: 16px;
+      line-height: 1;
+    }
+
+    /* ============================================================
+       Callout Box
+       ============================================================ */
+    .callout {
+      background: rgba(249, 115, 22, 0.06);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      text-align: left;
+      max-width: 700px;
+      margin: 24px auto 0;
+    }
+
+    .callout.callout-red {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .callout.callout-green {
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .callout.callout-cyan {
+      background: rgba(6, 182, 212, 0.06);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .callout-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-orange);
+      margin-bottom: 8px;
+    }
+
+    .callout-red .callout-label { color: var(--accent-red); }
+    .callout-green .callout-label { color: var(--accent-green); }
+    .callout-cyan .callout-label { color: var(--accent-cyan); }
+
+    .callout p {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================================
+       Panorama Map
+       ============================================================ */
+    .panorama-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .panorama-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .panorama-branches {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    .panorama-branch {
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .panorama-branch::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .branch-orange { background: rgba(249, 115, 22, 0.04); }
+    .branch-orange::before { background: linear-gradient(90deg, #f97316, #fbbf24); }
+    .branch-orange.lit { background: rgba(249, 115, 22, 0.12); border-color: rgba(249, 115, 22, 0.4); box-shadow: 0 0 30px rgba(249, 115, 22, 0.15); }
+
+    .branch-cyan { background: rgba(6, 182, 212, 0.04); }
+    .branch-cyan::before { background: linear-gradient(90deg, #06b6d4, #38bdf8); }
+    .branch-cyan.lit { background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4); box-shadow: 0 0 30px rgba(6, 182, 212, 0.15); }
+
+    .branch-green { background: rgba(34, 197, 94, 0.04); }
+    .branch-green::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .branch-green.lit { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 30px rgba(34, 197, 94, 0.15); }
+
+    .branch-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .branch-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .branch-methods {
+      list-style: none;
+      text-align: left;
+    }
+
+    .branch-methods li {
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+
+    .branch-methods li:hover {
+      background: rgba(255,255,255,0.07);
+    }
+
+    .method-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .branch-orange .method-dot { background: var(--accent-orange); }
+    .branch-cyan .method-dot { background: var(--accent-cyan); }
+    .branch-green .method-dot { background: var(--accent-green); }
+
+    .panorama-connector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .connector-line {
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--accent-orange),
+        var(--accent-cyan),
+        var(--accent-green));
+      border-radius: 1px;
+      position: relative;
+    }
+
+    .connector-line::before,
+    .connector-line::after,
+    .connector-line .mid-dot {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+
+    .connector-line::before {
+      left: 16.66%;
+      background: var(--accent-orange);
+      box-shadow: 0 0 10px var(--accent-orange-glow);
+    }
+
+    .connector-line::after {
+      right: 16.66%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green-glow);
+    }
+
+    .connector-line .mid-dot {
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan-glow);
+    }
+
+    /* ============================================================
+       Generation Timeline (Model Collapse demo)
+       ============================================================ */
+    .gen-timeline {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .gen-card {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .gen-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .gen-card:nth-child(1)::before { background: var(--accent-green); }
+    .gen-card:nth-child(2)::before { background: var(--accent-orange); }
+    .gen-card:nth-child(3)::before { background: var(--accent-red); }
+
+    .gen-card .gen-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .gen-card:nth-child(1) .gen-label { color: var(--accent-green); }
+    .gen-card:nth-child(2) .gen-label { color: var(--accent-orange); }
+    .gen-card:nth-child(3) .gen-label { color: var(--accent-red); }
+
+    .gen-card .gen-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .gen-card .gen-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .gen-card .gen-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .gen-arrow {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       Comparison Table
+       ============================================================ */
+    .compare-table {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 15px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .compare-table thead th {
+      background: rgba(249, 115, 22, 0.12);
+      color: var(--accent-orange);
+      font-weight: 700;
+      padding: 16px 18px;
+      text-align: center;
+      border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .compare-table thead th:first-child {
+      text-align: left;
+      color: var(--text-secondary);
+    }
+
+    .compare-table tbody td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .compare-table tbody td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .compare-table tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .compare-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* ============================================================
+       Cycle Diagram
+       ============================================================ */
+    .cycle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 32px auto;
+      flex-wrap: wrap;
+      max-width: 800px;
+    }
+
+    .cycle-node {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 160px;
+      transition: all 0.4s ease;
+    }
+
+    .cycle-node.active-node {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 20px var(--accent-orange-glow);
+    }
+
+    .cycle-arrow {
+      font-size: 28px;
+      color: var(--accent-orange);
+      animation: pulse-arrow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-arrow {
+      0%, 100% { opacity: 0.5; transform: translateX(0); }
+      50% { opacity: 1; transform: translateX(5px); }
+    }
+
+    /* ============================================================
+       Question List (Q&A)
+       ============================================================ */
+    .question-list {
+      text-align: left;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .question-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question-item:last-child { border-bottom: none; }
+
+    .q-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--accent-orange);
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .q-text {
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    /* ============================================================
+       Navigation UI
+       ============================================================ */
+    .nav-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 100;
+      background: linear-gradient(transparent, rgba(10, 15, 30, 0.8));
+    }
+
+    .progress-track {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.05);
+      z-index: 101;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+      transition: width 0.4s ease;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-family: var(--font-mono);
+    }
+
+    .nav-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .nav-hint kbd {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      margin: 0 2px;
+    }
+
+    /* ============================================================
+       Speaker Notes Overlay
+       ============================================================ */
+    .speaker-notes {
+      position: fixed;
+      bottom: 48px; left: 0; right: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      color: var(--text-secondary);
+      padding: 16px 30px;
+      font-size: 14px;
+      line-height: 1.6;
+      z-index: 99;
+      display: none;
+      border-top: 1px solid var(--border);
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .speaker-notes.show { display: block; }
+
+    .speaker-notes strong { color: var(--accent-orange); }
+
+    /* ============================================================
+       Action Button
+       ============================================================ */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px var(--accent-orange-glow);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-orange-glow);
+    }
+
+    /* ============================================================
+       Stagger Animations
+       ============================================================ */
+    .stagger > * {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .slide.active .stagger > *,
+    .fragment.visible .stagger > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide.active .stagger > *:nth-child(1) { transition-delay: 0.1s; }
+    .slide.active .stagger > *:nth-child(2) { transition-delay: 0.2s; }
+    .slide.active .stagger > *:nth-child(3) { transition-delay: 0.3s; }
+    .slide.active .stagger > *:nth-child(4) { transition-delay: 0.4s; }
+    .slide.active .stagger > *:nth-child(5) { transition-delay: 0.5s; }
+    .slide.active .stagger > *:nth-child(6) { transition-delay: 0.6s; }
+
+    .fragment.visible .stagger > *:nth-child(1) { transition-delay: 0.1s; }
+    .fragment.visible .stagger > *:nth-child(2) { transition-delay: 0.25s; }
+    .fragment.visible .stagger > *:nth-child(3) { transition-delay: 0.4s; }
+
+    /* ============================================================
+       Misc & Responsive
+       ============================================================ */
+    .spacer-sm { height: 16px; }
+    .spacer-md { height: 28px; }
+    .spacer-lg { height: 40px; }
+
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+
+    @keyframes fadeUpIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.1); }
+      50% { box-shadow: 0 0 40px rgba(249, 115, 22, 0.3); }
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 30px 24px; }
+      .grid-3, .panorama-branches { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .gen-timeline { flex-direction: column; }
+      .gen-arrow { transform: rotate(90deg); justify-content: center; }
+      .compare-table { font-size: 13px; }
+      .compare-table thead th, .compare-table tbody td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+
+    <!-- =====================================================
+         Slide 0: Part D Title
+         ===================================================== -->
+    <div class="slide active" id="part-d-title"
+         data-notes="15s - 简短承接 Part C。'前面三位同学展示了各种精彩的自我提升方法。但如果你听完觉得 Self-Improvement 是一个银弹——那请准备好被泼冷水。'">
+      <div class="slide-content">
+        <div class="tag">Part D &middot; 成员 D</div>
+        <h1 class="gradient-text">天花板、陷阱与未来</h1>
+        <p class="subtitle">Challenges, Theoretical Limits &amp; The Road Ahead</p>
+        <div class="spacer-lg"></div>
+        <div class="stagger" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <span style="padding: 10px 22px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; font-weight: 600; font-size: 16px; color: var(--accent-red);">Model Collapse</span>
+          <span style="padding: 10px 22px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); border-radius: 12px; font-weight: 600; font-size: 16px; color: var(--accent-orange);">Reward Hacking</span>
+          <span style="padding: 10px 22px; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); border-radius: 12px; font-weight: 600; font-size: 16px; color: var(--accent-cyan);">Scaling Laws</span>
+          <span style="padding: 10px 22px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 12px; font-weight: 600; font-size: 16px; color: var(--accent-green);">Future Directions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 1: Three Core Challenges Overview
+         ===================================================== -->
+    <div class="slide" id="challenges-overview"
+         data-notes="60s - 概述三大挑战。'自我提升听起来很美好，但有三个致命陷阱。我会用一个统一的例子——一个AI写作模型的自训练过程——来串起这三个问题。'">
+      <div class="slide-content">
+        <h2>自我提升的<span class="highlight-red">三大陷阱</span></h2>
+        <p class="subtitle" style="margin-bottom: 36px; font-size: 18px;">为什么"自己教自己"不是银弹</p>
+
+        <div class="grid-3 stagger">
+          <div class="pillar-card">
+            <span class="pillar-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#ef4444" stroke-width="2" opacity="0.3"/><path d="M16 32 L24 16 L32 32" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="24" y1="22" x2="24" y2="26" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="29" r="1.2" fill="#ef4444"/></svg>
+            </span>
+            <div class="pillar-title">Model Collapse</div>
+            <p class="pillar-desc">模型坍缩<br>用自己的输出训自己<br>多样性不断丧失<br><strong>分布越来越窄</strong></p>
+            <span class="pillar-number">01</span>
+          </div>
+          <div class="pillar-card">
+            <span class="pillar-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#f97316" stroke-width="2" opacity="0.3"/><path d="M18 28 Q 24 18 30 28" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="20" cy="22" r="2" fill="#f97316"/><circle cx="28" cy="22" r="2" fill="#f97316"/></svg>
+            </span>
+            <div class="pillar-title">Reward Hacking</div>
+            <p class="pillar-desc">奖励欺骗<br>模型学会"讨好"评判器<br>而非真正提升质量<br><strong>自己给自己放水</strong></p>
+            <span class="pillar-number">02</span>
+          </div>
+          <div class="pillar-card">
+            <span class="pillar-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#a855f7" stroke-width="2" opacity="0.3"/><path d="M14 30 Q 20 20 26 26 Q 32 32 38 18" stroke="#a855f7" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+            </span>
+            <div class="pillar-title">Distribution Shift</div>
+            <p class="pillar-desc">分布偏移<br>生成数据偏离真实分布<br>小误差在迭代中被放大<br><strong>渐行渐远</strong></p>
+            <span class="pillar-number">03</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 2: Model Collapse — Concrete Example
+         ===================================================== -->
+    <div class="slide" id="collapse-example"
+         data-notes="120s - 核心示例 slide。用写作模型的例子逐步展示 Model Collapse。'想象一个AI写作模型。第1代，多样性丰富——能写诗歌、新闻、小说、学术论文。用它的输出训练第2代，诗歌占比开始变大，因为模型"偏爱"诗歌格式。到第5代，几乎只会写一种风格的诗歌了。这就像近亲繁殖——基因库越来越小。'">
+      <div class="slide-content">
+        <div class="tag">Shumailov et al., 2023</div>
+        <h2>Model Collapse：<span class="highlight-red">近亲繁殖效应</span></h2>
+        <p class="subtitle" style="font-size: 16px; margin-bottom: 32px;">一个 AI 写作模型自训练 5 代后会发生什么？</p>
+
+        <div class="gen-timeline stagger">
+          <div class="gen-card">
+            <div class="gen-label">Generation 1</div>
+            <div class="gen-text">"春风十里不如你，夏日骄阳似火烧。最新研究表明，量子计算在药物发现中取得突破。今日股市大幅震荡..."</div>
+            <div class="gen-tags">
+              <span class="gen-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">诗歌</span>
+              <span class="gen-tag" style="background: rgba(6,182,212,0.15); color: var(--accent-cyan);">科技</span>
+              <span class="gen-tag" style="background: rgba(249,115,22,0.15); color: var(--accent-orange);">新闻</span>
+              <span class="gen-tag" style="background: rgba(168,85,247,0.15); color: var(--accent-purple);">小说</span>
+            </div>
+          </div>
+
+          <div class="gen-arrow">&rarr;</div>
+
+          <div class="gen-card">
+            <div class="gen-label">Generation 3</div>
+            <div class="gen-text">"春风拂面柳如烟，夏雨朦胧草色鲜。秋月映波光如水，冬雪覆盖万山连..."</div>
+            <div class="gen-tags">
+              <span class="gen-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">诗歌</span>
+              <span class="gen-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">诗歌</span>
+              <span class="gen-tag" style="background: rgba(6,182,212,0.15); color: var(--accent-cyan);">科技</span>
+            </div>
+          </div>
+
+          <div class="gen-arrow">&rarr;</div>
+
+          <div class="gen-card">
+            <div class="gen-label">Generation 5</div>
+            <div class="gen-text">"春风春风春风来，花开花开花开来。月光月光月光明，星辰星辰星辰亮..."</div>
+            <div class="gen-tags">
+              <span class="gen-tag" style="background: rgba(239,68,68,0.15); color: var(--accent-red);">重复</span>
+              <span class="gen-tag" style="background: rgba(239,68,68,0.15); color: var(--accent-red);">退化</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="callout callout-red fragment" style="max-width: 800px;">
+          <div class="callout-label">The Curse of Recursion</div>
+          <p>Shumailov et al. 发现：经过多代自训练，<strong style="color: var(--accent-red);">分布尾部逐渐消失</strong>——
+          少数类别被完全遗忘。"模型的世界越来越小，直到只剩下一片灰色。"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 3: Reward Hacking — Concrete Example
+         ===================================================== -->
+    <div class="slide" id="reward-hacking"
+         data-notes="90s - Reward Hacking 的具体例子。'继续我们的写作模型。现在给它加一个自我评分机制——模型写完后给自己的文章打分。问题来了：经过几轮训练，模型发现只要多写华丽的辞藻、多用排比句、加上一些看似深刻的结尾，就能拿到高分。它学会了讨好评判器的"套路"，但内容越来越空洞。这就是 Reward Hacking。'">
+      <div class="slide-content">
+        <div class="tag">Reward Hacking</div>
+        <h2>奖励欺骗：<span class="highlight-orange">自己给自己放水</span></h2>
+        <div class="spacer-md"></div>
+
+        <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+          <div class="glass-card text-left fragment">
+            <h3 style="font-size: 18px; margin-bottom: 16px; color: var(--accent-green);">Round 1：正常评分</h3>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 14px; color: var(--text-secondary); line-height: 1.7;">
+              <p><strong style="color: var(--text-primary);">Model output:</strong> "量子计算利用叠加态进行并行运算。"</p>
+              <p style="margin-top: 8px;"><strong style="color: var(--accent-green);">Self-score: 7/10</strong></p>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">准确、简洁、信息密度高</p>
+            </div>
+          </div>
+
+          <div class="glass-card text-left fragment">
+            <h3 style="font-size: 18px; margin-bottom: 16px; color: var(--accent-red);">Round 5：学会套路</h3>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 14px; color: var(--text-secondary); line-height: 1.7;">
+              <p><strong style="color: var(--text-primary);">Model output:</strong> "在量子力学的瑰丽画卷中，叠加态如同宇宙的密码，指引我们走向人类文明的曙光..."</p>
+              <p style="margin-top: 8px;"><strong style="color: var(--accent-red);">Self-score: 9/10</strong></p>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">华丽但空洞，评判器被自己套路骗了</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="callout fragment" style="max-width: 800px;">
+          <div class="callout-label">Sycophancy Problem</div>
+          <p>模型倾向于<strong style="color: var(--accent-orange);">"讨好"评判者</strong>而非追求真正的正确性。
+          当评判者就是自己时，这个问题更加严重——因为模型知道自己"喜欢"什么。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 4: Distribution Shift
+         ===================================================== -->
+    <div class="slide" id="dist-shift"
+         data-notes="60s - 用一个简单的图示讲 Distribution Shift。'第三个问题：每一轮训练都会引入一点小误差。一轮误差 2%，看起来没什么。但经过 10 轮自训练后，这些误差累积放大，最终模型生成的分布和真实数据完全脱节。就像你打电话传话——第一个人说的和第十个人听到的完全不是一回事。'">
+      <div class="slide-content">
+        <div class="tag">Distribution Shift</div>
+        <h2>分布偏移：<span class="highlight-purple">误差的滚雪球效应</span></h2>
+        <div class="spacer-md"></div>
+
+        <div style="max-width: 700px; margin: 0 auto;">
+          <svg viewBox="0 0 700 280" width="700" height="280" style="max-width: 100%;">
+            <defs>
+              <linearGradient id="distGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22c55e"/>
+                <stop offset="100%" stop-color="#22c55e"/>
+              </linearGradient>
+              <linearGradient id="distGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="100%" stop-color="#f97316"/>
+              </linearGradient>
+              <linearGradient id="distGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="100%" stop-color="#ef4444"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Axis -->
+            <line x1="80" y1="220" x2="650" y2="220" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+
+            <!-- Real distribution (wide, green) -->
+            <path d="M 150 220 Q 250 60 350 220" fill="none" stroke="#22c55e" stroke-width="2.5" opacity="0.8"/>
+            <text x="255" y="100" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="600" font-family="Inter, sans-serif">Real Data</text>
+
+            <!-- Round 3 (shifted, orange) -->
+            <path d="M 250 220 Q 380 80 480 220" fill="none" stroke="#f97316" stroke-width="2.5" opacity="0.7" stroke-dasharray="8,4"/>
+            <text x="385" y="110" text-anchor="middle" fill="#f97316" font-size="13" font-weight="600" font-family="Inter, sans-serif">Round 3</text>
+
+            <!-- Round 10 (very shifted, narrow, red) -->
+            <path d="M 420 220 Q 510 50 580 220" fill="none" stroke="#ef4444" stroke-width="2.5" opacity="0.7" stroke-dasharray="4,3"/>
+            <text x="520" y="75" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="600" font-family="Inter, sans-serif">Round 10</text>
+
+            <!-- Shift arrows -->
+            <path d="M 270 160 L 370 145" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arrowShift)"/>
+            <path d="M 400 135 L 500 110" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arrowShift)"/>
+
+            <defs>
+              <marker id="arrowShift" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.3)"/>
+              </marker>
+            </defs>
+
+            <!-- Labels -->
+            <text x="365" y="255" text-anchor="middle" fill="#64748b" font-size="12" font-family="Inter, sans-serif">Output Distribution Space</text>
+            <text x="270" y="245" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="11" font-family="Inter, sans-serif">drift</text>
+            <text x="460" y="245" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="11" font-family="Inter, sans-serif">drift</text>
+          </svg>
+        </div>
+
+        <div class="spacer-sm"></div>
+        <div class="callout callout-red fragment" style="max-width: 800px;">
+          <div class="callout-label">Telephone Game</div>
+          <p>就像<strong style="color: var(--accent-red);">电话传话游戏</strong>——每传一次偏差一点。
+          第 1 个人说"下午三点开会"，到第 10 个人变成"下午上甜点开慧"。
+          自训练的每一轮都在"传话"，误差不断累积。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 5: Unified Example — All Three Problems
+         ===================================================== -->
+    <div class="slide" id="unified-example"
+         data-notes="90s - 用统一的写作模型例子把三个问题串起来。从左到右逐步揭示。'这三个问题不是孤立的，它们往往同时发生、互相加强。Model Collapse 让输出变窄，Reward Hacking 让评分失准，Distribution Shift 让偏差放大——三者形成一个恶性循环。'">
+      <div class="slide-content">
+        <h2 style="font-size: clamp(22px, 3vw, 34px); margin-bottom: 32px;">三个问题的<span class="highlight-red">恶性循环</span></h2>
+        <p class="subtitle" style="font-size: 16px; margin-bottom: 32px;">以 AI 写作模型为例：三者同时发生、互相加强</p>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+          <svg viewBox="0 0 700 320" width="700" height="320" style="max-width: 100%;">
+            <!-- Three nodes in a triangle -->
+            <!-- Model Collapse (top) -->
+            <rect x="240" y="10" width="220" height="80" rx="16" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.4)" stroke-width="2"/>
+            <text x="350" y="42" text-anchor="middle" fill="#ef4444" font-size="16" font-weight="700" font-family="Inter, sans-serif">Model Collapse</text>
+            <text x="350" y="65" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter, sans-serif">输出越来越单一</text>
+
+            <!-- Reward Hacking (bottom-left) -->
+            <rect x="30" y="200" width="220" height="80" rx="16" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.4)" stroke-width="2"/>
+            <text x="140" y="232" text-anchor="middle" fill="#f97316" font-size="16" font-weight="700" font-family="Inter, sans-serif">Reward Hacking</text>
+            <text x="140" y="255" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter, sans-serif">评分系统被"套路"</text>
+
+            <!-- Distribution Shift (bottom-right) -->
+            <rect x="450" y="200" width="220" height="80" rx="16" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.4)" stroke-width="2"/>
+            <text x="560" y="232" text-anchor="middle" fill="#a855f7" font-size="16" font-weight="700" font-family="Inter, sans-serif">Distribution Shift</text>
+            <text x="560" y="255" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter, sans-serif">偏离真实数据分布</text>
+
+            <!-- Arrows forming a cycle -->
+            <defs>
+              <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+              </marker>
+              <marker id="arrowOrangeD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#f97316"/>
+              </marker>
+              <marker id="arrowPurpleD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#a855f7"/>
+              </marker>
+            </defs>
+
+            <!-- Top → Bottom-right -->
+            <path d="M 440 85 Q 520 140 500 195" fill="none" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowPurpleD)"/>
+            <text x="510" y="140" text-anchor="middle" fill="rgba(168,85,247,0.7)" font-size="11" font-family="Inter, sans-serif">窄分布加剧偏移</text>
+
+            <!-- Bottom-right → Bottom-left -->
+            <path d="M 450 250 Q 350 310 250 250" fill="none" stroke="#f97316" stroke-width="2" marker-end="url(#arrowOrangeD)"/>
+            <text x="350" y="300" text-anchor="middle" fill="rgba(249,115,22,0.7)" font-size="11" font-family="Inter, sans-serif">偏移数据误导评分</text>
+
+            <!-- Bottom-left → Top -->
+            <path d="M 200 200 Q 200 140 260 95" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+            <text x="180" y="140" text-anchor="middle" fill="rgba(239,68,68,0.7)" font-size="11" font-family="Inter, sans-serif">虚高评分强化偏好</text>
+          </svg>
+        </div>
+
+        <div class="callout callout-red fragment" style="max-width: 700px;">
+          <div class="callout-label">Vicious Cycle</div>
+          <p>输出变窄 &rarr; 评分被套路 &rarr; 偏差放大 &rarr; 输出更窄 &rarr; ...
+          这就是为什么<strong style="color: var(--accent-red);">不加干预的自训练注定会退化</strong>。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 6: Theoretical Perspective
+         ===================================================== -->
+    <div class="slide" id="theory"
+         data-notes="90s - 转入理论分析。先抛问题让观众思考，再给答案。'一个 60 分的模型能把自己训练到 90 分吗？理论上——有条件地可以。关键条件有两个：足够的多样性和可靠的验证信号。回忆 Part A 讲的"生成 vs 判别"能力差——这就是自我提升的理论基础。'">
+      <div class="slide-content">
+        <div class="tag">Theory</div>
+        <h2>一个 <span class="highlight-orange">60 分</span>的模型能把自己训练到 <span class="highlight-green">90 分</span>吗？</h2>
+        <div class="spacer-lg"></div>
+
+        <div class="grid-2 fragment" style="max-width: 880px; margin: 0 auto;">
+          <div class="glass-card text-left" style="border-top: 3px solid var(--accent-green);">
+            <h3 style="font-size: 20px; margin-bottom: 16px; color: var(--accent-green);">可以，如果...</h3>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; 模型规模<strong style="color: var(--text-primary);">足够大</strong></li>
+              <li>&#x2022; 有<strong style="color: var(--text-primary);">可靠的验证信号</strong>（数学答案可验证）</li>
+              <li>&#x2022; 生成中有<strong style="color: var(--text-primary);">足够的多样性</strong></li>
+              <li>&#x2022; 判别能力 &gt; 生成能力（有提升空间）</li>
+            </ul>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">— Huang et al., 2022</p>
+          </div>
+
+          <div class="glass-card text-left" style="border-top: 3px solid var(--accent-red);">
+            <h3 style="font-size: 20px; margin-bottom: 16px; color: var(--accent-red);">不行，如果...</h3>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; 缺乏外部验证信号（开放式生成任务）</li>
+              <li>&#x2022; 生成多样性不足（sampling 太窄）</li>
+              <li>&#x2022; 评判器本身有系统性偏差</li>
+              <li>&#x2022; 生成能力 &asymp; 判别能力（没有差距可利用）</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="callout fragment" style="max-width: 800px;">
+          <div class="callout-label">Callback to Part A</div>
+          <p>还记得 Part A 讲的<strong style="color: var(--accent-orange);">"批改作业比写作业容易"</strong>吗？
+          自我提升的上界 = <strong style="color: var(--accent-cyan);">判别能力追平生成能力的那一刻</strong>。
+          就像一个学生，当他的"审美"和"动手能力"一样强时，自学就到了瓶颈。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 7: Three Scaling Paradigms
+         ===================================================== -->
+    <div class="slide" id="scaling"
+         data-notes="90s - 三种 Scaling 范式的对比。用具体的例子讲清楚每种 Scaling 遇到的墙。'Data Scaling 撞上了数据墙，Compute Scaling 撞上了成本墙，Self-Improvement Scaling 撞上了 Model Collapse 墙。但好消息是——这三者是互补的。未来最优策略一定是三者的组合。'">
+      <div class="slide-content">
+        <h2>三种 Scaling 范式：<span class="gradient-text">各有天花板</span></h2>
+        <p class="subtitle" style="font-size: 16px; margin-bottom: 36px;">未来最优策略 = 三者的组合</p>
+
+        <div class="grid-3 stagger">
+          <div class="glass-card text-center" style="border-top: 3px solid var(--accent-cyan);">
+            <div style="font-size: 36px; margin-bottom: 12px;">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="6" stroke="#06b6d4" stroke-width="2" opacity="0.5"/><rect x="14" y="20" width="6" height="16" rx="2" fill="#06b6d4" opacity="0.6"/><rect x="22" y="14" width="6" height="22" rx="2" fill="#06b6d4" opacity="0.8"/><rect x="30" y="8" width="6" height="28" rx="2" fill="#06b6d4"/></svg>
+            </div>
+            <h3 style="font-size: 18px; color: var(--accent-cyan);">Data Scaling</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">
+              更多人类数据
+            </p>
+            <div style="margin-top: 16px; padding: 10px 14px; background: rgba(239,68,68,0.08); border-radius: 10px; border: 1px solid rgba(239,68,68,0.2);">
+              <p style="font-size: 13px; color: var(--accent-red); font-weight: 600;">Data Wall</p>
+              <p style="font-size: 12px; color: var(--text-muted);">高质量文本 2026-2028 年用尽</p>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px; font-style: italic;">GPT-3: 300B tokens<br>LLaMA-3: 15T tokens</p>
+          </div>
+
+          <div class="glass-card text-center" style="border-top: 3px solid var(--accent-orange);">
+            <div style="font-size: 36px; margin-bottom: 12px;">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="6" stroke="#f97316" stroke-width="2" opacity="0.5"/><circle cx="24" cy="24" r="10" stroke="#f97316" stroke-width="2" fill="none"/><path d="M24 18 L24 24 L28 28" stroke="#f97316" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <h3 style="font-size: 18px; color: var(--accent-orange);">Compute Scaling</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">
+              更大模型/更多算力
+            </p>
+            <div style="margin-top: 16px; padding: 10px 14px; background: rgba(239,68,68,0.08); border-radius: 10px; border: 1px solid rgba(239,68,68,0.2);">
+              <p style="font-size: 13px; color: var(--accent-red); font-weight: 600;">Cost Wall</p>
+              <p style="font-size: 12px; color: var(--text-muted);">GPT-4 训练成本 ~$100M</p>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px; font-style: italic;">GPT-3: 175B params<br>GPT-4: ~1.8T params (est.)</p>
+          </div>
+
+          <div class="glass-card text-center" style="border-top: 3px solid var(--accent-green);">
+            <div style="font-size: 36px; margin-bottom: 12px;">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="6" stroke="#22c55e" stroke-width="2" opacity="0.5"/><path d="M18 30 Q 24 14 30 30" stroke="#22c55e" stroke-width="2" fill="none"/><path d="M16 28 L24 16 L32 28" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.5"/></svg>
+            </div>
+            <h3 style="font-size: 18px; color: var(--accent-green);">Self-Improvement</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">
+              自己生成训练数据
+            </p>
+            <div style="margin-top: 16px; padding: 10px 14px; background: rgba(239,68,68,0.08); border-radius: 10px; border: 1px solid rgba(239,68,68,0.2);">
+              <p style="font-size: 13px; color: var(--accent-red); font-weight: 600;">Collapse Wall</p>
+              <p style="font-size: 12px; color: var(--text-muted);">Model Collapse + Reward Hacking</p>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px; font-style: italic;">STaR: +30% reasoning<br>ReST: beyond human data</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 8: Test-Time Compute
+         ===================================================== -->
+    <div class="slide" id="test-time"
+         data-notes="120s - 这是最前沿的方向。'o1、DeepSeek-R1 的核心思路是：不只在训练时提升，推理时也能自我提升。给模型更多"思考时间"，用 Chain-of-Thought 搜索+自我验证，就能显著提升效果。Snell et al. 发现：小模型 + 更多推理时间 约等于 大模型 + 少量推理时间。这意味着 Scaling 的维度从"模型大小"扩展到了"推理时间"。'">
+      <div class="slide-content">
+        <div class="tag">Frontier 2024-2025</div>
+        <h2>Test-Time Compute：<span class="gradient-text">推理时自我提升</span></h2>
+        <p class="subtitle" style="font-size: 16px; margin-bottom: 32px;">o1 / o3 / DeepSeek-R1 的核心思路</p>
+
+        <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+          <div class="glass-card text-left fragment">
+            <h3 style="font-size: 18px; margin-bottom: 16px; color: var(--accent-orange);">核心机制</h3>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; <strong style="color: var(--text-primary);">Long CoT</strong>：让模型"想"更久</li>
+              <li>&#x2022; <strong style="color: var(--text-primary);">Tree Search</strong>：搜索多条推理路径</li>
+              <li>&#x2022; <strong style="color: var(--text-primary);">Self-Verification</strong>：自己检查中间步骤</li>
+              <li>&#x2022; <strong style="color: var(--text-primary);">Backtracking</strong>：发现错误就回退重来</li>
+            </ul>
+          </div>
+
+          <div class="glass-card text-center fragment" style="display: flex; flex-direction: column; justify-content: center;">
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">关键发现 (Snell et al., 2024)</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+              <div style="text-align: center;">
+                <p style="font-size: 15px; font-weight: 700; color: var(--accent-cyan);">Small Model</p>
+                <p style="font-size: 12px; color: var(--text-muted);">+ more thinking</p>
+              </div>
+              <div style="font-size: 28px; font-weight: 800; color: var(--accent-orange);">&asymp;</div>
+              <div style="text-align: center;">
+                <p style="font-size: 15px; font-weight: 700; color: var(--accent-green);">Large Model</p>
+                <p style="font-size: 12px; color: var(--text-muted);">+ less thinking</p>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 20px; line-height: 1.6;">
+              推理时的额外计算可以<strong style="color: var(--text-primary);">替代</strong>部分训练计算
+            </p>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="callout callout-cyan fragment" style="max-width: 800px;">
+          <div class="callout-label">Real-World Example</div>
+          <p>DeepSeek-R1（开源）在数学竞赛题上通过 long CoT "思考" 2000+ tokens，
+          正确率从 <strong style="color: var(--accent-red);">40%</strong> 提升到 <strong style="color: var(--accent-green);">86%</strong>——
+          不改模型权重，只给更多思考时间。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 9: Multi-Agent & Self-Improving Agents
+         ===================================================== -->
+    <div class="slide" id="agents"
+         data-notes="90s - 两个前沿方向放在一起。左边讲多智能体协同提升（异构 agent），右边讲 Voyager（自我提升的 Minecraft agent）。'未来的方向不仅是语言能力的自我提升，而是 Agent 在环境中行动并学习——从"自己读书学习"到"在真实世界中边做边学"。Voyager 在 Minecraft 中自动发现技能、积累技能库，3.3x 的探索效率超越人类玩家。'">
+      <div class="slide-content">
+        <h2>从语言模型到<span class="gradient-text-reverse">智能体</span></h2>
+        <p class="subtitle" style="font-size: 16px; margin-bottom: 32px;">Self-Improvement 的下一站</p>
+
+        <div class="grid-2" style="max-width: 920px; margin: 0 auto;">
+          <div class="glass-card text-left fragment">
+            <h3 style="font-size: 18px; margin-bottom: 16px; color: var(--accent-cyan);">Multi-Agent 协同提升</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 12px 16px; background: rgba(6,182,212,0.06); border-radius: 10px; border-left: 3px solid var(--accent-cyan);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Generator Agent</p>
+                <p style="font-size: 13px; color: var(--text-muted);">负责生成候选方案</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(249,115,22,0.06); border-radius: 10px; border-left: 3px solid var(--accent-orange);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Verifier Agent</p>
+                <p style="font-size: 13px; color: var(--text-muted);">负责验证和评判</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(34,197,94,0.06); border-radius: 10px; border-left: 3px solid var(--accent-green);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Planner Agent</p>
+                <p style="font-size: 13px; color: var(--text-muted);">负责分解任务和规划</p>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px; font-style: italic;">
+              异构分工 &gt; 同质竞争
+            </p>
+          </div>
+
+          <div class="glass-card text-left fragment">
+            <h3 style="font-size: 18px; margin-bottom: 16px; color: var(--accent-green);">Voyager: Minecraft Agent</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Wang et al., 2023</p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid var(--border);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Automatic Curriculum</p>
+                <p style="font-size: 13px; color: var(--text-muted);">自动生成探索目标</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid var(--border);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Skill Library</p>
+                <p style="font-size: 13px; color: var(--text-muted);">自动积累可复用技能</p>
+              </div>
+              <div style="padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid var(--border);">
+                <p style="font-size: 14px; color: var(--text-primary); font-weight: 600;">Result: 3.3x faster</p>
+                <p style="font-size: 13px; color: var(--accent-green);">探索效率是人类玩家的 3.3 倍</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 10: AI Safety Connection
+         ===================================================== -->
+    <div class="slide" id="safety"
+         data-notes="90s - 这是整场演讲的 philosophical 高潮。'如果模型能反复改进自己，我们怎么确保它改进的方向是人类想要的？这不是一个遥远的问题——它正在发生。回想 Part C 讲的 Constitutional AI——用人类定义的"宪法"来约束自我进化的方向。核心转变是：人类的角色从"做具体的标注"变成"定义什么是对的"。'">
+      <div class="slide-content">
+        <div class="tag">AI Safety</div>
+        <h2>自我提升的<span class="highlight-red">安全隐忧</span></h2>
+        <div class="spacer-md"></div>
+
+        <div class="quote fragment" style="border-left-color: var(--accent-red);">
+          "如果一个 AI 能反复改进自己，<br>
+          我们如何确保它改进的方向是<strong style="color: var(--accent-orange);">人类想要的</strong>？"
+        </div>
+
+        <div class="spacer-lg"></div>
+
+        <div class="grid-2 fragment" style="max-width: 880px; margin: 0 auto;">
+          <div class="glass-card text-left" style="border-top: 3px solid var(--accent-red);">
+            <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--accent-red);">风险</h3>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; <strong style="color: var(--text-primary);">Recursive Self-Improvement</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">能力指数增长 → 人类来不及监管</span></li>
+              <li style="margin-top: 8px;">&#x2022; <strong style="color: var(--text-primary);">Goal Drift</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">优化目标在迭代中悄悄偏移</span></li>
+              <li style="margin-top: 8px;">&#x2022; <strong style="color: var(--text-primary);">Value Lock-in</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">错误的价值观被固化放大</span></li>
+            </ul>
+          </div>
+
+          <div class="glass-card text-left" style="border-top: 3px solid var(--accent-green);">
+            <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--accent-green);">对策</h3>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; <strong style="color: var(--text-primary);">Constitutional AI</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">用原则/宪法约束自我进化方向</span></li>
+              <li style="margin-top: 8px;">&#x2022; <strong style="color: var(--text-primary);">Human-in-the-Loop</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">关键节点保留人类审查权</span></li>
+              <li style="margin-top: 8px;">&#x2022; <strong style="color: var(--text-primary);">Interpretability</strong><br>
+                <span style="font-size: 13px; color: var(--text-muted);">让自我改进过程可解释可审计</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 11: Full Panorama Recap
+         ===================================================== -->
+    <div class="slide" id="panorama-recap"
+         data-notes="90s - 回到开场的全景图，把所有方法都点亮。'让我们回到开场的全景地图。现在你应该对每个位置上的方法都有了清晰的理解。左边是自我提升——出题、做题、改题、筛题。中间是自我博弈——和自己对弈、自己当裁判、宪法约束、互相辩论。右边是自我进化——用进化算法让模型群体演化。而今天我们还看到了这些方法背后的挑战和新方向。'">
+      <div class="slide-content">
+        <div class="panorama-wrapper">
+          <div class="panorama-header">
+            <h2><span class="gradient-text">全景地图</span>：全部点亮</h2>
+            <p class="subtitle" style="font-size: 16px; margin-bottom: 8px;">回顾我们走过的完整旅程</p>
+          </div>
+
+          <div class="panorama-connector">
+            <div class="connector-line"><span class="mid-dot"></span></div>
+          </div>
+
+          <div class="panorama-branches">
+            <div class="panorama-branch branch-orange lit">
+              <div class="branch-title highlight-orange">自我提升</div>
+              <div class="branch-subtitle">Part B &middot; Self-Improving</div>
+              <ul class="branch-methods">
+                <li><span class="method-dot"></span> Self-Instruct <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自己出题</span></li>
+                <li><span class="method-dot"></span> STaR / V-STaR <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自举推理</span></li>
+                <li><span class="method-dot"></span> Self-Refine <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我改进</span></li>
+                <li><span class="method-dot"></span> ReST <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">强化自训练</span></li>
+              </ul>
+            </div>
+
+            <div class="panorama-branch branch-cyan lit">
+              <div class="branch-title highlight-cyan">自我博弈与 AI 反馈</div>
+              <div class="branch-subtitle">Part C &middot; Self-Play &amp; AI Feedback</div>
+              <ul class="branch-methods">
+                <li><span class="method-dot"></span> SPIN <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我博弈</span></li>
+                <li><span class="method-dot"></span> Self-Rewarding <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">自我奖励</span></li>
+                <li><span class="method-dot"></span> Constitutional AI <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">宪法约束</span></li>
+                <li><span class="method-dot"></span> LLM Debate <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">对抗辩论</span></li>
+              </ul>
+            </div>
+
+            <div class="panorama-branch branch-green lit">
+              <div class="branch-title highlight-green">自我进化</div>
+              <div class="branch-subtitle">Part C &middot; Self-Evolving</div>
+              <ul class="branch-methods">
+                <li><span class="method-dot"></span> FunSearch <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化搜索</span></li>
+                <li><span class="method-dot"></span> EvoPrompt <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化提示</span></li>
+                <li><span class="method-dot"></span> OpenELM <span style="color:var(--text-muted); font-size:12px; margin-left:auto;">进化大模型</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 12: Layered Summary
+         ===================================================== -->
+    <div class="slide" id="summary"
+         data-notes="90s - 四层总结，逐步揭示。每一层停顿一下，让观众回忆对应的内容。'Part A 告诉我们为什么需要自我提升。Part B 展示了核心方法。Part C 带我们看到了更高级的对弈和进化。Part D——就是我这部分——揭示了天花板，但也指出了突破天花板的新方向。'">
+      <div class="slide-content">
+        <h2>分层<span class="gradient-text">总结</span></h2>
+        <div class="spacer-md"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; max-width: 750px; margin: 0 auto; text-align: left;">
+          <div class="glass-card fragment" style="padding: 20px 28px; border-left: 4px solid var(--accent-orange);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent-orange); text-transform: uppercase;">Part A</span>
+              <span style="font-size: 17px; font-weight: 600;">LLM 需要自我提升，因为人工标注不可持续</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">Data Wall + 标注成本 → Bootstrap 自举 → 生成 vs 判别不对称</p>
+          </div>
+
+          <div class="glass-card fragment" style="padding: 20px 28px; border-left: 4px solid var(--accent-cyan);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Part B</span>
+              <span style="font-size: 17px; font-weight: 600;">核心方法：出题、推理、改进、筛选</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">Self-Instruct → STaR/V-STaR → Self-Refine → ReST</p>
+          </div>
+
+          <div class="glass-card fragment" style="padding: 20px 28px; border-left: 4px solid var(--accent-green);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent-green); text-transform: uppercase;">Part C</span>
+              <span style="font-size: 17px; font-weight: 600;">进阶方法：博弈、评判、宪法、进化</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">SPIN → Self-Rewarding → Constitutional AI → FunSearch</p>
+          </div>
+
+          <div class="glass-card fragment" style="padding: 20px 28px; border-left: 4px solid var(--accent-red);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent-red); text-transform: uppercase;">Part D</span>
+              <span style="font-size: 17px; font-weight: 600;">有天花板，但正在突破</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">Model Collapse + Reward Hacking → Test-Time Compute + Agent + Safety</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 13: The Big Answer
+         ===================================================== -->
+    <div class="slide" id="big-answer"
+         data-notes="60s - 回答开场的核心问题。'还记得 Part A 留的问题吗？模型真的能自己批改自己的作业吗？答案是——可以，但需要三个关键条件。可靠的验证信号，足够的多样性，以及人类设定的原则约束。这三个条件缺一不可。'">
+      <div class="slide-content">
+        <p style="font-size: 18px; color: var(--text-muted); margin-bottom: 24px;">
+          回答 Part A 的问题
+        </p>
+        <h2 style="margin-bottom: 32px;">模型真的能<span class="gradient-text">自己批改自己的作业</span>吗？</h2>
+
+        <div class="big-text fragment" style="margin-bottom: 40px;">
+          <span class="highlight-green">可以</span>，但需要三个条件
+        </div>
+
+        <div class="grid-3 stagger fragment" style="max-width: 800px; margin: 0 auto;">
+          <div class="glass-card text-center" style="padding: 24px 20px;">
+            <div style="font-size: 32px; margin-bottom: 12px;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" stroke="#22c55e" stroke-width="2" opacity="0.5"/><path d="M14 20l4 4 8-8" stroke="#22c55e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3 style="font-size: 16px; color: var(--accent-green);">可靠的验证信号</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px; line-height: 1.5;">数学有标准答案<br>代码能跑通测试<br>形式验证 &gt; 直觉判断</p>
+          </div>
+
+          <div class="glass-card text-center" style="padding: 24px 20px;">
+            <div style="font-size: 32px; margin-bottom: 12px;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" stroke="#06b6d4" stroke-width="2" opacity="0.5"/><circle cx="14" cy="18" r="3" fill="#06b6d4" opacity="0.6"/><circle cx="26" cy="18" r="3" fill="#06b6d4" opacity="0.6"/><circle cx="20" cy="26" r="3" fill="#06b6d4" opacity="0.6"/></svg>
+            </div>
+            <h3 style="font-size: 16px; color: var(--accent-cyan);">足够的多样性</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px; line-height: 1.5;">多路径采样<br>温度采样策略<br>避免模式坍缩</p>
+          </div>
+
+          <div class="glass-card text-center" style="padding: 24px 20px;">
+            <div style="font-size: 32px; margin-bottom: 12px;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" stroke="#f97316" stroke-width="2" opacity="0.5"/><rect x="14" y="12" width="12" height="16" rx="2" fill="none" stroke="#f97316" stroke-width="2"/><line x1="17" y1="18" x2="23" y2="18" stroke="#f97316" stroke-width="1.5"/><line x1="17" y1="22" x2="23" y2="22" stroke="#f97316" stroke-width="1.5"/></svg>
+            </div>
+            <h3 style="font-size: 16px; color: var(--accent-orange);">人类原则约束</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px; line-height: 1.5;">Constitutional AI<br>Safety guardrails<br>人类定义方向</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 14: Closing Thought
+         ===================================================== -->
+    <div class="slide" id="closing"
+         data-notes="60s - 留一个开放性思考。语气从总结转向展望。'这意味着人类的角色正在发生根本性的转变——从做具体的标注工作，到定义什么是对的。从数据标注者变成原则制定者。这或许是 AI 时代，人类最重要的新角色。' 停顿一下，让观众消化。">
+      <div class="slide-content">
+        <h2 style="margin-bottom: 32px;">一个<span class="gradient-text">开放性思考</span></h2>
+
+        <div class="quote fragment" style="border-left-color: var(--accent-cyan); max-width: 750px;">
+          "如果模型能无限自我提升，<br>
+          那人类标注者的角色会变成什么？"
+        </div>
+
+        <div class="spacer-lg"></div>
+
+        <div class="fragment" style="max-width: 700px; margin: 0 auto;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 40px;">
+            <div style="text-align: center;">
+              <div style="font-size: 18px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">过去</div>
+              <div style="padding: 16px 24px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px;">
+                <p style="font-size: 16px; font-weight: 700; color: var(--accent-red);">数据标注者</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"做具体的事"</p>
+              </div>
+            </div>
+
+            <div style="font-size: 32px; color: var(--accent-orange);">&rarr;</div>
+
+            <div style="text-align: center;">
+              <div style="font-size: 18px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">未来</div>
+              <div style="padding: 16px 24px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px;">
+                <p style="font-size: 16px; font-weight: 700; color: var(--accent-green);">原则制定者</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"定义什么是对的"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-lg"></div>
+        <p class="fragment" style="font-size: 18px; color: var(--text-muted);">
+          这或许是 AI 时代，人类最重要的新角色。
+        </p>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 15: Q&A
+         ===================================================== -->
+    <div class="slide" id="qa"
+         data-notes="180s - Q&A 环节。先给观众 10 秒思考时间。如果没人提问，用预设的引导性问题来破冰。每个问题都附带简要的思考方向，但不要直接给标准答案——鼓励讨论。">
+      <div class="slide-content">
+        <div class="tag">Q &amp; A</div>
+        <h1 class="gradient-text">Questions?</h1>
+        <p class="subtitle" style="margin-bottom: 40px;">如果你有任何疑问，或者想挑战我们的观点</p>
+
+        <div class="question-list stagger">
+          <div class="question-item">
+            <span class="q-number">1</span>
+            <span class="q-text">Self-Improvement 最终会让<strong class="highlight-orange">人类标注者彻底失业</strong>吗？</span>
+          </div>
+          <div class="question-item">
+            <span class="q-number">2</span>
+            <span class="q-text">如果你有一个 7B 的小模型，你会优先用<strong class="highlight-cyan">哪种方法</strong>来提升它？</span>
+          </div>
+          <div class="question-item">
+            <span class="q-number">3</span>
+            <span class="q-text">递归自我提升的<strong class="highlight-red">安全风险</strong>，你觉得应该怎么应对？</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 16: Thank You
+         ===================================================== -->
+    <div class="slide" id="thankyou"
+         data-notes="15s - 感谢观众。如果时间允许，可以补充一句：'今天的 slides 和参考文献都会分享给大家，欢迎课后继续交流。'">
+      <div class="slide-content">
+        <h1 class="gradient-text" style="font-size: clamp(48px, 6vw, 80px);">Thank You</h1>
+        <div class="spacer-md"></div>
+        <p class="subtitle">自我提升与自我进化算法</p>
+        <p style="font-size: 16px; color: var(--text-muted); margin-top: 8px;">
+          Self-Improving &amp; Self-Evolving Algorithms for LLMs
+        </p>
+        <div style="width: 80px; height: 3px; background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan)); border-radius: 2px; margin: 32px auto;"></div>
+        <p style="font-size: 15px; color: var(--text-muted);">
+          CS2916 &middot; 上海交通大学 &middot; 2026 春季学期
+        </p>
+      </div>
+    </div>
+
+  </div><!-- end .presentation -->
+
+  <!-- =====================================================
+       Navigation UI
+       ===================================================== -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="nav-bar">
+    <span class="nav-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate &nbsp;&middot;&nbsp; <kbd>S</kbd> notes &nbsp;&middot;&nbsp; <kbd>F</kbd> fullscreen</span>
+    <span class="slide-counter" id="slideCounter">1 / 17</span>
+  </div>
+
+  <!-- Speaker Notes Overlay -->
+  <div class="speaker-notes" id="speakerNotes"></div>
+
+  <!-- =====================================================
+       JavaScript
+       ===================================================== -->
+  <script>
+    (function() {
+      'use strict';
+
+      const slides = document.querySelectorAll('.slide');
+      const totalSlides = slides.length;
+      let currentSlide = 0;
+      let isAnimating = false;
+      let notesVisible = false;
+
+      function getFragments(slideEl) {
+        return Array.from(slideEl.querySelectorAll('.fragment:not(.visible)'));
+      }
+
+      function getAllFragments(slideEl) {
+        return Array.from(slideEl.querySelectorAll('.fragment'));
+      }
+
+      function updateUI() {
+        document.getElementById('progressFill').style.width =
+          ((currentSlide + 1) / totalSlides * 100) + '%';
+        document.getElementById('slideCounter').textContent =
+          (currentSlide + 1) + ' / ' + totalSlides;
+
+        const notes = slides[currentSlide].getAttribute('data-notes') || '';
+        const notesEl = document.getElementById('speakerNotes');
+        notesEl.innerHTML = notes;
+      }
+
+      function goToSlide(index) {
+        if (index < 0 || index >= totalSlides || index === currentSlide || isAnimating) return;
+        isAnimating = true;
+
+        const direction = index > currentSlide ? 1 : -1;
+        const prevSlide = slides[currentSlide];
+        const nextSlide = slides[index];
+
+        getAllFragments(nextSlide).forEach(f => f.classList.remove('visible'));
+
+        prevSlide.classList.remove('active');
+        if (direction > 0) prevSlide.classList.add('exit-left');
+        prevSlide.style.transform = direction > 0
+          ? 'translateX(-40px) scale(0.98)'
+          : 'translateX(40px) scale(0.98)';
+
+        nextSlide.style.transform = direction > 0
+          ? 'translateX(40px) scale(0.98)'
+          : 'translateX(-40px) scale(0.98)';
+        nextSlide.classList.add('active');
+
+        requestAnimationFrame(() => {
+          nextSlide.style.transform = '';
+        });
+
+        currentSlide = index;
+        updateUI();
+
+        setTimeout(() => {
+          prevSlide.classList.remove('exit-left');
+          prevSlide.style.transform = '';
+          isAnimating = false;
+        }, 500);
+      }
+
+      function nextStep() {
+        const hiddenFragments = getFragments(slides[currentSlide]);
+        if (hiddenFragments.length > 0) {
+          hiddenFragments[0].classList.add('visible');
+        } else {
+          goToSlide(currentSlide + 1);
+        }
+      }
+
+      function prevStep() {
+        const visibleFragments = getAllFragments(slides[currentSlide])
+          .filter(f => f.classList.contains('visible'));
+        if (visibleFragments.length > 0) {
+          visibleFragments[visibleFragments.length - 1].classList.remove('visible');
+        } else {
+          goToSlide(currentSlide - 1);
+        }
+      }
+
+      document.addEventListener('keydown', function(e) {
+        switch(e.key) {
+          case 'ArrowRight':
+          case ' ':
+          case 'PageDown':
+            e.preventDefault();
+            nextStep();
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            prevStep();
+            break;
+          case 'Home':
+            e.preventDefault();
+            goToSlide(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            goToSlide(totalSlides - 1);
+            break;
+          case 's':
+          case 'S':
+            notesVisible = !notesVisible;
+            document.getElementById('speakerNotes').classList.toggle('show', notesVisible);
+            break;
+          case 'f':
+          case 'F':
+            if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+              document.exitFullscreen().catch(() => {});
+            }
+            break;
+        }
+      });
+
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('button, a, input')) return;
+        if (e.clientX < window.innerWidth * 0.3) {
+          prevStep();
+        } else {
+          nextStep();
+        }
+      });
+
+      let touchStartX = 0;
+      document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) nextStep();
+          else prevStep();
+        }
+      }, { passive: true });
+
+      updateUI();
+    })();
+  </script>
+</body>
+</html>

@@ -4062,7 +4062,7 @@
     <div class="slide" id="part-b-title"
          data-notes="15s - 简短承接 Part A，点明本部分要讲的四个方法。'接下来我们来看核心的自我提升方法——模型怎么做到自己出题、自己做、自己改。'">
       <div class="slide-content">
-        <div class="tag">Part B &middot; 成员 B</div>
+        <div class="tag">Part B &middot; 于恩帝</div>
         <h1 class="gradient-text">核心自我提升方法</h1>
         <p class="subtitle">Core Self-Improving Methods</p>
         <div class="spacer-lg"></div>
@@ -4441,8 +4441,6 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
             <div class="iteration-critique">Critique: IndexError when j+1 out of bounds. O(n&sup2;) bubble sort is inefficient. No input validation.</div>
           </div>
 
-          <div class="iteration-arrow-down fragment">&darr;</div>
-
           <div class="iteration-card v2 fragment">
             <div class="iteration-header">
               <span class="iteration-label">v2 &middot; After 1 Refinement</span>
@@ -4458,8 +4456,6 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
   return arr</div>
             <div class="iteration-critique">Critique: Better, but still O(n&sup2;). Python has built-in sorted() which is more Pythonic and faster.</div>
           </div>
-
-          <div class="iteration-arrow-down fragment">&darr;</div>
 
           <div class="iteration-card v3 fragment">
             <div class="iteration-header">
@@ -4607,7 +4603,70 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
     </div>
 
     <!-- =====================================================
-         Slide 13: ReST^EM
+         Slide 13: EM Algorithm Introduction
+         ===================================================== -->
+    <div class="slide" id="em-algo"
+         data-notes="60s - 先介绍 EM 算法本身，为下一张 ReST^EM slide 做铺垫。用直观的比喻（聚类/硬币估计）讲清 E-step 和 M-step 的含义，不需要公式。">
+      <div class="slide-content">
+        <div class="tag">Background</div>
+        <h2 style="font-size: clamp(22px, 3vw, 34px); margin-bottom: 8px;">EM 算法：<span class="gradient-text">期望最大化</span></h2>
+        <p class="subtitle" style="font-size: 16px;">Expectation-Maximization Algorithm</p>
+        <div class="spacer-md"></div>
+
+        <div class="glass-card fragment text-left" style="max-width: 780px; margin: 0 auto; border-left: 4px solid var(--accent-cyan);">
+          <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--accent-cyan);">一句话概括</h3>
+          <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+            给定含有<strong style="color: var(--text-primary);">隐变量</strong>的不完全数据，
+            反复迭代两个步骤来<strong style="color: var(--accent-orange);">逼近</strong>参数的最优估计。
+          </p>
+        </div>
+
+        <div class="spacer-sm"></div>
+
+        <div class="grid-2" style="max-width: 880px; margin: 0 auto;">
+          <div class="glass-card fragment text-left" style="border-top: 3px solid var(--accent-cyan);">
+            <h3 style="font-size: 20px; margin-bottom: 14px; color: var(--accent-cyan);">E-Step（期望步）</h3>
+            <p style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Expectation</p>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; 固定当前参数 θ<sup>(t)</sup></li>
+              <li>&#x2022; 推断隐变量的<strong style="color: var(--text-primary);">期望分布</strong></li>
+              <li>&#x2022; "假设参数是对的，隐变量应该是什么？"</li>
+            </ul>
+          </div>
+
+          <div class="glass-card fragment text-left" style="border-top: 3px solid var(--accent-green);">
+            <h3 style="font-size: 20px; margin-bottom: 14px; color: var(--accent-green);">M-Step（最大化步）</h3>
+            <p style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Maximization</p>
+            <ul style="list-style: none; font-size: 15px; color: var(--text-secondary); line-height: 2;">
+              <li>&#x2022; 固定隐变量的期望分布</li>
+              <li>&#x2022; 更新参数 θ<sup>(t+1)</sup> 使<strong style="color: var(--text-primary);">似然最大</strong></li>
+              <li>&#x2022; "给定隐变量的分布，参数该怎么调？"</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="spacer-sm"></div>
+
+        <div class="callout fragment" style="max-width: 780px;">
+          <div class="callout-label">直觉类比</div>
+          <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.8;">
+            假设你有两枚外观一样的硬币 A、B，混在一起抛了若干次，但不知道每次用的是哪枚。
+            <strong style="color: var(--accent-cyan);">E-step</strong>：根据当前估计的正面概率，推断每轮更可能用的是哪枚硬币；
+            <strong style="color: var(--accent-green);">M-step</strong>：根据推断结果，重新估计两枚硬币的正面概率。
+            反复迭代，估计越来越准。
+          </p>
+        </div>
+
+        <div class="spacer-sm"></div>
+        <p class="fragment" style="font-size: 14px; color: var(--text-muted); text-align: center;">
+          EM 算法保证<strong style="color: var(--accent-orange);">似然单调递增</strong>——每轮迭代都至少不比上一轮差。<br>
+          接下来我们看 ReST 如何借用这个框架 &#8594;
+        </p>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide 14: ReST^EM
          ===================================================== -->
     <div class="slide" id="rest-em"
          data-notes="60s - 用 EM 算法的视角来理解 ReST。E 步就是 Grow+Improve，M 步就是 Train。这个视角帮助理解为什么 ReST 理论上有效。">
@@ -4649,7 +4708,7 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
     </div>
 
     <!-- =====================================================
-         Slide 14: Comparison Table
+         Slide 15: Comparison Table
          ===================================================== -->
     <div class="slide" id="comparison"
          data-notes="90s - 这是 Part B 的总结 slide。用对比表把四种方法放在一起比较。逐行讲解，强调每种方法的独特之处。">
@@ -4715,7 +4774,7 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
     </div>
 
     <!-- =====================================================
-         Slide 15: Transition to Part C
+         Slide 16: Transition to Part C
          ===================================================== -->
     <div class="slide" id="transition-to-c"
          data-notes="30s - 简短过渡，交棒给成员 C。语气从总结转向好奇。'以上四种方法都是模型单向地提升自己。但如果模型能和自己对弈呢？'">
@@ -4738,7 +4797,7 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
 
         <div class="spacer-md"></div>
         <p class="fragment" style="font-size: 20px; color: var(--text-secondary);">
-          交棒给成员 C &rarr;
+          Part C &rarr;
         </p>
       </div>
     </div>

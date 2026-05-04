@@ -1700,6 +1700,7 @@
         });
 
         currentSlide = index;
+        history.replaceState(null, '', '#' + (index + 1));
         updateUI();
 
         setTimeout(() => {
@@ -1727,6 +1728,25 @@
           goToSlide(currentSlide - 1);
         }
       }
+
+      // Hash navigation
+      function slideFromHash() {
+        var n = parseInt(location.hash.slice(1), 10);
+        if (n >= 1 && n <= totalSlides) return n - 1;
+        return null;
+      }
+      var initialSlide = slideFromHash();
+      if (initialSlide !== null && initialSlide !== 0) {
+        slides[0].classList.remove('active');
+        slides[initialSlide].classList.add('active');
+        currentSlide = initialSlide;
+        updateUI();
+      }
+      history.replaceState(null, '', '#' + (currentSlide + 1));
+      window.addEventListener('hashchange', function() {
+        var target = slideFromHash();
+        if (target !== null && target !== currentSlide) goToSlide(target);
+      });
 
       document.addEventListener('keydown', function(e) {
         switch(e.key) {

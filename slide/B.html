@@ -1752,6 +1752,7 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
         });
 
         currentSlide = index;
+        history.replaceState(null, '', '#' + (index + 1));
         updateUI();
 
         setTimeout(() => {
@@ -1779,6 +1780,25 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
           goToSlide(currentSlide - 1);
         }
       }
+
+      // Hash navigation
+      function slideFromHash() {
+        const n = parseInt(location.hash.slice(1), 10);
+        if (n >= 1 && n <= totalSlides) return n - 1;
+        return null;
+      }
+      const initialSlide = slideFromHash();
+      if (initialSlide !== null && initialSlide !== 0) {
+        slides[0].classList.remove('active');
+        slides[initialSlide].classList.add('active');
+        currentSlide = initialSlide;
+        updateUI();
+      }
+      history.replaceState(null, '', '#' + (currentSlide + 1));
+      window.addEventListener('hashchange', () => {
+        const target = slideFromHash();
+        if (target !== null && target !== currentSlide) goToSlide(target);
+      });
 
       // Keyboard controls
       document.addEventListener('keydown', function(e) {

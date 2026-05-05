@@ -4432,41 +4432,47 @@ Time = 1 / (5/12) = 12/5 = 2.4 hours</div>
             <div class="iteration-header">
               <span class="iteration-label">v1 &middot; Initial</span>
             </div>
-            <div class="iteration-code">def sort(lst):
-  for i in range(len(lst)):
-    for j in range(len(lst)):
-      if lst[j] > lst[j+1]:
-        lst[j], lst[j+1] = lst[j+1], lst[j]
-  return lst</div>
-            <div class="iteration-critique">Critique: IndexError when j+1 out of bounds. O(n&sup2;) bubble sort is inefficient. No input validation.</div>
+            <div class="iteration-code">def flatten(lst):
+  result = []
+  for item in lst:
+    if isinstance(item, list):
+      for sub in item:
+        result.append(sub)
+    else:
+      result.append(item)
+  return result</div>
+            <div class="iteration-critique">Critique: Only flattens one level. Fails on deeply nested input like [[1, [2, 3]], 4].</div>
           </div>
 
           <div class="iteration-card v2 fragment">
             <div class="iteration-header">
               <span class="iteration-label">v2 &middot; After 1 Refinement</span>
             </div>
-            <div class="iteration-code">def sort(lst):
-  if not isinstance(lst, list):
-    raise TypeError("Expected list")
-  arr = lst.copy()
-  for i in range(len(arr) - 1):
-    for j in range(len(arr) - 1 - i):
-      if arr[j] > arr[j+1]:
-        arr[j], arr[j+1] = arr[j+1], arr[j]
-  return arr</div>
-            <div class="iteration-critique">Critique: Better, but still O(n&sup2;). Python has built-in sorted() which is more Pythonic and faster.</div>
+            <div class="iteration-code">def flatten(lst):
+  result = []
+  for item in lst:
+    if isinstance(item, list):
+      result.extend(flatten(item))
+    else:
+      result.append(item)
+  return result</div>
+            <div class="iteration-critique">Critique: Recursive approach handles deep nesting. But ignores tuples &mdash; flatten([1, (2, 3)]) returns [1, (2, 3)].</div>
           </div>
 
           <div class="iteration-card v3 fragment">
             <div class="iteration-header">
               <span class="iteration-label">v3 &middot; Final</span>
             </div>
-            <div class="iteration-code">def sort(lst: list) -> list:
-  """Return a sorted copy of the input list."""
-  if not isinstance(lst, list):
-    raise TypeError(f"Expected list, got {type(lst).__name__}")
-  return sorted(lst)</div>
-            <div class="iteration-critique">Critique: Clean, Pythonic, O(n log n). Acceptable.</div>
+            <div class="iteration-code">def flatten(lst):
+  """Flatten a nested list/tuple structure."""
+  result = []
+  for item in lst:
+    if isinstance(item, (list, tuple)):
+      result.extend(flatten(item))
+    else:
+      result.append(item)
+  return result</div>
+            <div class="iteration-critique">Critique: Handles both list and tuple. Clean recursive logic with docstring. Acceptable.</div>
           </div>
         </div>
       </div>

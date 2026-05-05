@@ -1012,8 +1012,8 @@
           当大语言模型学会自己教自己
         </p>
         <div class="cover-meta">
-          <span>上海交通大学</span>
-          <span>2026 春季学期</span>
+          <span>上海交通大学 ACM班</span>
+          <span>2026.5.6</span>
         </div>
       </div>
     </div>
@@ -1255,7 +1255,7 @@
          Slide 6: Data Wall
          ===================================================== -->
     <div class="slide" id="datawall"
-         data-notes="90s - 从 RLHF 瓶颈过渡到 Self-Improvement 的必要性。'不仅人工标注贵，连可用的训练数据本身都快用完了。高质量互联网文本的增速远跟不上模型的需求。所以 Self-Improvement 不是一个可选项——它是唯一的出路。'">
+         data-notes="90s - 从 RLHF 瓶颈过渡到 Self-Improvement 的必要性。'不仅人工标注贵，连可用的训练数据本身都快用完了。GPT-3 用了 3000 亿 tokens，而 Llama 3 用了 15 万亿——5 年间增长了 50 倍。但互联网高质量文本总共大约也就几十万亿 tokens 的量级。这个缺口正在迅速扩大。所以 Self-Improvement 不是一个可选项——它是唯一的出路。'">
       <div class="slide-content">
         <div class="tag">The Data Wall</div>
         <h2>不仅标注贵，<span class="highlight-orange">数据也快用完了</span></h2>
@@ -1264,15 +1264,25 @@
         <div class="grid-2" style="max-width: 900px; margin: 0 auto; align-items: stretch;">
           <div class="glass-card text-left">
             <h3 style="font-size: 18px; margin-bottom: 16px;">Data Wall 问题</h3>
-            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
-              研究估计，<strong style="color: var(--accent-orange);">高质量互联网文本</strong>可能在
-              <strong style="color: var(--accent-orange);">2026-2028 年</strong>被主要 AI 实验室用尽。
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 14px; color: var(--text-muted);">GPT-3 (2020)</span>
+                <span style="font-size: 18px; font-weight: 700; color: var(--text-secondary);">300B tokens</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 14px; color: var(--text-muted);">Llama 3 (2024)</span>
+                <span style="font-size: 18px; font-weight: 700; color: var(--accent-orange);">15T tokens</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 14px; color: var(--text-muted);">互联网高质量文本总量</span>
+                <span style="font-size: 18px; font-weight: 700; color: var(--accent-red);">~数十T tokens</span>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+              4 年间训练数据需求增长 <strong style="color: var(--accent-orange);">50 倍</strong>，
+              而高质量文本总量几乎不变。缺口正在迅速扩大。
             </p>
-            <p style="font-size: 14px; color: var(--text-muted); margin-top: 12px; line-height: 1.7;">
-              模型越来越大，需要的数据指数增长，<br>
-              但互联网的高质量内容增速远跟不上。
-            </p>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px; font-style: italic;">
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; font-style: italic;">
               — Villalobos et al., 2022
             </p>
           </div>
@@ -1303,45 +1313,21 @@
     </div>
 
     <!-- =====================================================
-         Slide 7: The Pivot
-         ===================================================== -->
-    <div class="slide" id="pivot"
-         data-notes="60s - 这张是转折点，从问题过渡到解决方案。先让'如果...'停留一下（用 fragment），制造期待感。语气从沉重转向兴奋。">
-      <div class="slide-content">
-        <p style="font-size: 22px; color: var(--text-muted); margin-bottom: 32px;">
-          人工标注不可持续，那怎么办？
-        </p>
-        <h1 class="fragment">
-          如果<span class="gradient-text">模型能自己来</span>呢？
-        </h1>
-        <div class="spacer-md"></div>
-        <p class="subtitle fragment">
-          自己出题 &middot; 自己做题 &middot; 自己批改 &middot; 自己改进
-        </p>
-        <div class="spacer-lg"></div>
-        <div class="fragment" style="opacity: 0;">
-          <p style="font-size: 20px; color: var(--text-muted);">
-            "这听起来像自己拽着头发把自己从沼泽里拉出来？"
-          </p>
-          <p style="font-size: 16px; color: var(--text-muted); margin-top: 8px;">
-            —— 没错，这正是 <span class="highlight-orange">Bootstrap（自举）</span>的精髓
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- =====================================================
-         Slide 6: Bootstrap Concept
+         Slide 7: Bootstrap Concept
          ===================================================== -->
     <div class="slide" id="bootstrap"
-         data-notes="90s - 讲 Munchausen 的故事（简短有趣），然后过渡到技术直觉。'虽然听起来矛盾——用自己的输出训练自己，但模型的输出中确实隐含着有价值的信号。关键在于一种不对称性——判断答案对不对，比从零写出正确答案更容易。下一张 slide 我们会深入这个点。'">
+         data-notes="120s - 先从'怎么办？'的转折开始，制造期待感。然后讲 Munchausen 的故事（简短有趣），再过渡到技术直觉。强调三步循环：生成→评估→训练，每一步简要说明。不要在这里展开'为什么判别比生成容易'——下一张 slide 专门讲。">
       <div class="slide-content">
-        <div class="tag">Core Idea</div>
-        <h2>自举（Bootstrap）：<span class="highlight-orange">用自己提升自己</span></h2>
-        <div class="spacer-md"></div>
+        <p style="font-size: 19px; color: var(--text-muted); margin-bottom: 8px;">
+          人工标注不可持续，那怎么办？
+        </p>
+        <h2>如果<span class="gradient-text">模型能自己来</span>呢？</h2>
+        <p class="subtitle" style="font-size: 17px; margin-bottom: 28px;">
+          自己出题 &middot; 自己做题 &middot; 自己批改 &middot; 自己改进 —— 这就是 <span class="highlight-orange">Bootstrap（自举）</span>
+        </p>
 
         <div class="grid-2" style="max-width: 900px; margin: 0 auto; align-items: center;">
-          <!-- Left: Story -->
+          <!-- Left: Story + Explanation -->
           <div class="glass-card text-left">
             <h3 style="font-size: 18px; margin-bottom: 12px;">Baron Munchausen 的故事</h3>
             <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.7;">
@@ -1358,7 +1344,6 @@
           <!-- Right: Cycle diagram -->
           <div style="text-align: center;">
             <svg viewBox="0 0 300 300" width="260" height="260">
-              <!-- Circular arrows -->
               <defs>
                 <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
                   <polygon points="0 0, 8 3, 0 6" fill="#f97316"/>
@@ -1369,33 +1354,25 @@
                 </linearGradient>
               </defs>
 
-              <!-- Center circle -->
               <circle cx="150" cy="150" r="40" fill="rgba(249,115,22,0.1)" stroke="#f97316" stroke-width="2"/>
               <text x="150" y="145" text-anchor="middle" fill="#f97316" font-size="13" font-weight="600" font-family="Inter, sans-serif">LLM</text>
               <text x="150" y="162" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter, sans-serif">Model</text>
 
-              <!-- Top node: Generate -->
               <rect x="105" y="15" width="90" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
               <text x="150" y="38" text-anchor="middle" fill="#f1f5f9" font-size="12" font-weight="600" font-family="Inter, sans-serif">Generate</text>
 
-              <!-- Right node: Evaluate -->
               <rect x="215" y="182" width="80" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
               <text x="255" y="205" text-anchor="middle" fill="#f1f5f9" font-size="12" font-weight="600" font-family="Inter, sans-serif">Evaluate</text>
 
-              <!-- Left node: Train -->
               <rect x="5" y="182" width="80" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
               <text x="45" y="205" text-anchor="middle" fill="#f1f5f9" font-size="12" font-weight="600" font-family="Inter, sans-serif">Train</text>
 
-              <!-- Arrows: circular flow -->
-              <!-- Top to Right -->
               <path d="M 190 50 Q 240 90 240 180" fill="none" stroke="url(#circGrad)" stroke-width="2" marker-end="url(#arrowhead)">
                 <animate attributeName="stroke-dasharray" from="0,200" to="200,0" dur="1.5s" fill="freeze"/>
               </path>
-              <!-- Right to Left -->
               <path d="M 215 210 Q 150 260 85 210" fill="none" stroke="url(#circGrad)" stroke-width="2" marker-end="url(#arrowhead)">
                 <animate attributeName="stroke-dasharray" from="0,200" to="200,0" dur="1.5s" begin="0.5s" fill="freeze"/>
               </path>
-              <!-- Left to Top -->
               <path d="M 60 182 Q 60 90 110 50" fill="none" stroke="url(#circGrad)" stroke-width="2" marker-end="url(#arrowhead)">
                 <animate attributeName="stroke-dasharray" from="0,200" to="200,0" dur="1.5s" begin="1s" fill="freeze"/>
               </path>
@@ -1403,12 +1380,22 @@
           </div>
         </div>
 
-        <div class="spacer-md"></div>
-        <div class="callout fragment" style="max-width: 800px;">
-          <div class="callout-label">Key Insight</div>
-          <p>模型的输出虽然不完美，但其中<strong style="color: var(--accent-orange);">隐含着有价值的信号</strong>。
-          关键在于：<strong style="color: var(--accent-cyan);">判断答案好不好，比从零写出好答案容易</strong>——
-          这种不对称性让自我提升成为可能。</p>
+        <div class="spacer-sm"></div>
+        <div class="fragment">
+          <div class="grid-3" style="max-width: 900px; margin: 0 auto;">
+            <div style="text-align: center; padding: 16px;">
+              <p style="font-size: 28px; margin-bottom: 8px;">1. Generate</p>
+              <p style="font-size: 14px; color: var(--text-secondary);">模型对同一问题<br><strong style="color: var(--accent-orange);">生成多个候选答案</strong></p>
+            </div>
+            <div style="text-align: center; padding: 16px;">
+              <p style="font-size: 28px; margin-bottom: 8px;">2. Evaluate</p>
+              <p style="font-size: 14px; color: var(--text-secondary);">通过验证信号<br><strong style="color: var(--accent-cyan);">筛选出正确的答案</strong></p>
+            </div>
+            <div style="text-align: center; padding: 16px;">
+              <p style="font-size: 28px; margin-bottom: 8px;">3. Train</p>
+              <p style="font-size: 14px; color: var(--text-secondary);">用筛选后的数据<br><strong style="color: var(--accent-green);">微调模型，提升能力</strong></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1417,22 +1404,20 @@
          Slide 9: Generation vs Discrimination
          ===================================================== -->
     <div class="slide" id="gendisc"
-         data-notes="60s - 这是 Part A 的理论点睛之笔。'验证一个数学证明比写一个证明容易得多。同样，模型判断一个回答好不好，比从零写出一个好回答要容易。这种不对称性就是自我提升的理论基础——用更强的判别能力来指导更弱的生成能力。当两者追平时，提升就到天花板了——Part D 的同学会详细展开这一点。'">
+         data-notes="90s - 这是 Part A 的理论点睛之笔。逐一展开三个例子，每个停顿一下让观众体会。'验证一个数学证明正不正确——你只需要逐步检查逻辑链。但从零写出一个证明？那需要创造性的洞察。同样的道理在代码和翻译中也成立。这种不对称性就是自我提升的认知基础。当生成能力追上判别能力时，提升到达天花板——Part D 会详细展开。'">
       <div class="slide-content">
         <div class="tag">Why It Works</div>
         <h2>为什么<span class="gradient-text">自我提升</span>理论上可行？</h2>
-        <div class="spacer-md"></div>
+        <p class="subtitle" style="font-size: 17px; margin-bottom: 28px;">生成 vs 判别：一种关键的<span class="highlight-orange">能力不对称</span></p>
 
-        <div class="grid-2" style="max-width: 800px; margin: 0 auto; align-items: stretch;">
+        <div class="grid-2" style="max-width: 800px; margin: 0 auto; align-items: stretch; margin-bottom: 24px;">
           <div class="glass-card text-center" style="border-color: rgba(249,115,22,0.2);">
             <p style="margin-bottom: 12px;">
               <svg width="56" height="56" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="8" fill="none" stroke="#f97316" stroke-width="2" opacity="0.4"/><text x="28" y="36" text-anchor="middle" fill="#f97316" font-size="24" font-weight="700" font-family="Inter, sans-serif">?</text></svg>
             </p>
             <h3 style="font-size: 20px; color: var(--accent-orange);">生成（Generation）</h3>
-            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6;">
-              从零写出正确答案
-            </p>
-            <p style="font-size: 32px; font-weight: 800; color: var(--accent-orange); margin-top: 16px;">难</p>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px;">从零写出正确答案</p>
+            <p style="font-size: 32px; font-weight: 800; color: var(--accent-orange); margin-top: 12px;">难</p>
           </div>
 
           <div class="glass-card text-center" style="border-color: rgba(34,197,94,0.2);">
@@ -1440,25 +1425,119 @@
               <svg width="56" height="56" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="8" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.4"/><path d="M 18 28 L 26 36 L 40 20" stroke="#22c55e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </p>
             <h3 style="font-size: 20px; color: var(--accent-green);">判别（Discrimination）</h3>
-            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6;">
-              判断答案是否正确
-            </p>
-            <p style="font-size: 32px; font-weight: 800; color: var(--accent-green); margin-top: 16px;">相对容易</p>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-top: 8px;">判断答案是否正确</p>
+            <p style="font-size: 32px; font-weight: 800; color: var(--accent-green); margin-top: 12px;">相对容易</p>
           </div>
         </div>
 
-        <div class="spacer-md"></div>
-        <div class="callout fragment" style="max-width: 800px;">
-          <div class="callout-label">Core Insight</div>
-          <p><strong style="color: var(--accent-orange);">批改作业比写作业容易</strong>——模型的判别能力通常强于生成能力。
-          自我提升的本质：<strong style="color: var(--accent-cyan);">用判别能力来指导和提升生成能力</strong>。
-          当两者追平时，提升到达天花板。</p>
+        <div class="fragment">
+          <div class="grid-3" style="max-width: 900px; margin: 0 auto;">
+            <div class="glass-card text-center" style="padding: 20px 16px;">
+              <p style="font-size: 24px; margin-bottom: 8px;">数学</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                <span style="color: var(--accent-orange);">写证明</span>：需要创造性洞察<br>
+                <span style="color: var(--accent-green);">验证证明</span>：逐步检查逻辑链
+              </p>
+            </div>
+            <div class="glass-card text-center" style="padding: 20px 16px;">
+              <p style="font-size: 24px; margin-bottom: 8px;">代码</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                <span style="color: var(--accent-orange);">写正确代码</span>：要兼顾逻辑与边界<br>
+                <span style="color: var(--accent-green);">找 bug</span>：运行测试用例即可
+              </p>
+            </div>
+            <div class="glass-card text-center" style="padding: 20px 16px;">
+              <p style="font-size: 24px; margin-bottom: 8px;">翻译</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                <span style="color: var(--accent-orange);">翻译出信达雅</span>：需要深度理解<br>
+                <span style="color: var(--accent-green);">判断翻译好坏</span>：对比即可感知
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-sm"></div>
+        <div class="fragment">
+          <p style="font-size: 18px; color: var(--text-secondary); max-width: 750px; margin: 0 auto; line-height: 1.6;">
+            自我提升的本质：<strong style="color: var(--accent-cyan);">用更强的判别能力来指导更弱的生成能力</strong>。
+            当两者追平时，提升到达天花板。
+          </p>
         </div>
       </div>
     </div>
 
     <!-- =====================================================
-         Slide 8: Panorama Map
+         Slide: Concrete Example - Self-Improvement in Action
+         ===================================================== -->
+    <div class="slide" id="example"
+         data-notes="90s - 用一个具体的数学例子走一遍完整流程。'比如我们想让模型学会解方程。第一步，给它出 100 道题，让它每道题尝试 5 次。第二步，哪些答案对了？数学题可以验证——代入原方程检查。第三步，把做对的解题过程收集起来当训练数据。第四步，用这些数据微调模型。然后重复这个过程。注意关键点：验证信号！数学题可以自动验证，这就是为什么 Self-Improvement 在数学和代码领域效果最好。'">
+      <div class="slide-content">
+        <div class="tag">Walkthrough</div>
+        <h2>一个<span class="gradient-text">具体例子</span>：数学推理的自我提升</h2>
+        <div class="spacer-sm"></div>
+
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 8px; align-items: center; max-width: 1060px; margin: 0 auto;" class="stagger">
+          <div class="stage-card" style="padding: 20px 14px;">
+            <p style="font-size: 28px; margin-bottom: 8px;">Step 1</p>
+            <h3 style="font-size: 15px; color: var(--accent-orange);">采样生成</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+              给模型 100 道题<br>每题生成 <strong style="color: var(--text-primary);">5 个</strong>候选解
+            </p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">→ 500 个候选答案</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="stage-card" style="padding: 20px 14px;">
+            <p style="font-size: 28px; margin-bottom: 8px;">Step 2</p>
+            <h3 style="font-size: 15px; color: var(--accent-cyan);">自动验证</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+              代入原方程检查<br>答案是否<strong style="color: var(--text-primary);">正确</strong>
+            </p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">→ 筛出 120 个正确解</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="stage-card" style="padding: 20px 14px;">
+            <p style="font-size: 28px; margin-bottom: 8px;">Step 3</p>
+            <h3 style="font-size: 15px; color: var(--accent-green);">构造数据</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+              正确解的推理过程<br>成为<strong style="color: var(--text-primary);">训练样本</strong>
+            </p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">→ 高质量推理链</p>
+          </div>
+
+          <div class="stage-arrow">
+            <svg width="24" height="24" viewBox="0 0 32 24"><path d="M 0 12 L 20 12 M 14 6 L 20 12 L 14 18" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="stage-card stage-highlight" style="padding: 20px 14px;">
+            <p style="font-size: 28px; margin-bottom: 8px;">Step 4</p>
+            <h3 style="font-size: 15px; color: var(--accent-orange);">微调迭代</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+              微调模型后<br><strong style="color: var(--text-primary);">重复整个过程</strong>
+            </p>
+            <p style="font-size: 11px; color: var(--accent-orange); margin-top: 6px;">→ 正确率逐轮上升</p>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="callout fragment" style="max-width: 800px;">
+          <div class="callout-label">关键前提</div>
+          <p>这个流程依赖<strong style="color: var(--accent-orange);">可靠的验证信号</strong>——数学题可以代入验证，代码可以跑测试。
+          这也解释了为什么 Self-Improvement 在<strong style="color: var(--accent-cyan);">数学和代码领域</strong>效果最好，
+          而在开放式写作等领域更具挑战。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         Slide: Panorama Map
          ===================================================== -->
     <div class="slide" id="panorama"
          data-notes="120s - 全场最关键的 slide，后续每个 Part 开始都会回来引用。逐一介绍三大分支。'左边这一列是核心自我提升方法——模型自己出题、做题、改题。中间是自我博弈和 AI 反馈——模型和自己对弈，或者自己当裁判。右边是自我进化——用进化算法的思想让模型群体自己演化。接下来三位同学会分别深入讲解。'">
